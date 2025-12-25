@@ -1,0 +1,10 @@
+build/
+install/
+log/
+tmp/
+*.log
+*.tmp
+.DS_Store
+*.swp
+.idea/
+.vscode/
