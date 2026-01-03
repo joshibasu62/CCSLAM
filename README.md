@@ -81,3 +81,14 @@ Eigen CMake helper (if needed):
 sudo apt install libeigen3-dev ros-jazzy-eigen3-cmake-module
 git clone git@github.com:joshibasu62/CCSLAM.git
 cd CCSLAM
+
+---
+If building error occurs Order should be
+'''bash
+px4_msgs
+px4_ros2_cpp
+ov_core
+ov_init
+and at last all
+'''bash
+
