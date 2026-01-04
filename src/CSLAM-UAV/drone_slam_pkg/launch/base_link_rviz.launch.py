@@ -53,5 +53,41 @@ def generate_launch_description():
         #     output='screen',
         #     parameters=[{'use_sim_time': True}]
         # )
+
+        Node(
+            package='rtabmap_odom',
+            executable='rgbd_odometry',
+            name='rtabmap_odom',
+            output='screen',
+            parameters=[
+                {'use_sim_time': True},
+
+                # Frames
+                {'frame_id': 'base_link'},
+                {'odom_frame_id': 'odom'},
+                {'publish_tf': True},
+
+                # RGB-D
+                {'subscribe_rgbd': False},
+                {'subscribe_depth': True},
+                {'approx_sync': True},
+
+                # IMU
+                {'subscribe_imu': True},
+                {'wait_imu_to_init': True}
+            ],
+            remappings=[
+                # RGB camera
+                ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+                ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+
+                # Depth
+                ('depth/image', '/depth_camera'),
+
+                # IMU
+                ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+            ]
+        ),
+
     ])
 
