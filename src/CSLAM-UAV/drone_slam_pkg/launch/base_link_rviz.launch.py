@@ -46,12 +46,12 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': True}]
         ),
-        Node(
-            package='drone_slam_pkg',
-            executable='odom_drone_tf',
-            name='odom_drone_tf',
-            output='screen',
-            parameters=[{'use_sim_time': True}]
-        )
+        # Node(
+        #     package='drone_slam_pkg',
+        #     executable='odom_drone_tf',
+        #     name='odom_drone_tf',
+        #     output='screen',
+        #     parameters=[{'use_sim_time': True}]
+        # )
     ])
 
