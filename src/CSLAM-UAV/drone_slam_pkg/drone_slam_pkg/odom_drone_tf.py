@@ -7,6 +7,7 @@ from nav_msgs.msg import Path
 from px4_msgs.msg import VehicleOdometry
 import tf2_ros
 from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy
+from rclpy.qos import qos_profile_system_default
 
 class OdomTfPublisher(Node):
     def __init__(self):
@@ -23,7 +24,7 @@ class OdomTfPublisher(Node):
             VehicleOdometry,
             '/fmu/out/vehicle_odometry',
             self.odom_callback,
-            qos_profile
+            qos_profile_system_default
         )
 
          # Publisher for path
