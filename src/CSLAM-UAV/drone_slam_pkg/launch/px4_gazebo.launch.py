@@ -33,22 +33,22 @@ def generate_launch_description():
 
     }
     return LaunchDescription([
-        # ExecuteProcess(
-        #     cmd=['gnome-terminal', '--', 'make', '-C', px4_dir, 'px4_sitl', 'gz_x500_depth_baylands'],
-        #     output='screen',
-        #     shell=True
-        # ),
-        # ExecuteProcess(
-        #     cmd=['gnome-terminal', '--', ' ./QGroundControl.AppImage'],
-        #     cwd=os.path.expanduser('~/Desktop'),
-        #     output='screen',
-        #     shell=True
-        # ),
+        ExecuteProcess(
+            cmd=['gnome-terminal', '--', 'make', '-C', px4_dir, 'px4_sitl', 'gz_x500_depth'],
+            output='screen',
+            shell=True
+        ),
+        ExecuteProcess(
+            cmd=['gnome-terminal', '--', ' ./QGroundControl-x86_64.AppImage'],
+            cwd=os.path.expanduser('~/Downloads'),
+            output='screen',
+            shell=True
+        ),
         ExecuteProcess(
              cmd=['MicroXRCEAgent','udp4', '--port', '8888']
         ),
         TimerAction(
-            period=5.0,
+            period=15.0,
             actions=[
                 Node(
                     package='ros_gz_bridge',
@@ -61,10 +61,10 @@ def generate_launch_description():
                         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
 
                         # RGB camera
-                        "/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
+                        "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
 
                         # Camera info
-                        "/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
+                        "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
 
                         # Depth camera raw image
                         "/depth_camera@sensor_msgs/msg/Image[gz.msgs.Image",
@@ -73,7 +73,7 @@ def generate_launch_description():
                         "/depth_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
 
                         # IMU
-                        "/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
+                        "/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
                     ]
                 ),
                 # Node(
@@ -113,10 +113,10 @@ def generate_launch_description():
                 #             'publish_tf': True
                 #         }],
                 #         remappings=[
-                #             ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-                #             ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+                #             ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+                #             ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
                 #             ('depth/image', '/depth_camera'),
-                #             ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                #             ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
                 #         ]
                 #     ),
                 Node(
@@ -141,10 +141,10 @@ def generate_launch_description():
                         'wait_imu_to_init': True
                     }],
                     remappings=[
-                        ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-                        ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+                        ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+                        ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
                         ('depth/image', '/depth_camera'),
-                        ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
                         ('odom', '/odom'),
                     ]
                     ),
@@ -162,10 +162,10 @@ def generate_launch_description():
                         'approx_sync_max_interval': 0.1,  # Very permissive for visualization
                     }],
                     remappings=[
-                        ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-                        ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+                        ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+                        ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
                         ('depth/image', '/depth_camera'),
-                        ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
                         ('odom', '/odom'),
                     ]
                     ),
@@ -237,10 +237,10 @@ def generate_launch_description():
 #                         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
                         
 #                         # RGB camera
-#                         "/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
+#                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
                         
 #                         # Camera info
-#                         "/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
+#                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
                         
 #                         # Depth camera
 #                         "/depth_camera@sensor_msgs/msg/Image[gz.msgs.Image",
@@ -249,7 +249,7 @@ def generate_launch_description():
 #                         "/depth_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
                         
 #                         # IMU
-#                         "/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
+#                         "/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
 #                     ]
 #                 ),
                 
@@ -285,10 +285,10 @@ def generate_launch_description():
 #                         'queue_size': 200,  # Larger queue for Gazebo
 #                     }],
 #                     remappings=[
-#                         ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-#                         ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+#                         ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+#                         ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
 #                         ('depth/image', '/depth_camera'),
-#                         ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+#                         ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
 #                     ]
 #                 ),
                 
@@ -373,10 +373,10 @@ def generate_launch_description():
 #                         'Rtabmap/Localization': False,
 #                     }],
 #                     remappings=[
-#                         ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-#                         ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+#                         ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+#                         ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
 #                         ('depth/image', '/depth_camera'),
-#                         ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+#                         ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
 #                         ('odom', '/odom'),
 #                     ]
 #                 ),
@@ -397,10 +397,10 @@ def generate_launch_description():
 #                         'approx_sync_max_interval': 0.1,  # Very permissive for visualization
 #                     }],
 #                     remappings=[
-#                         ('rgb/image', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-#                         ('rgb/camera_info', '/world/baylands/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
+#                         ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
+#                         ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
 #                         ('depth/image', '/depth_camera'),
-#                         ('imu', '/world/baylands/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+#                         ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
 #                         ('odom', '/odom'),
 #                     ]
 #                 ),
