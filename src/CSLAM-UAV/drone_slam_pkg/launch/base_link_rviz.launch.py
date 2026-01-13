@@ -35,11 +35,27 @@ def generate_launch_description():
         'queue_size': 200,
         'sync_queue_size': 100,
 
+        
+        'Odom/ResetCountdown': '1',     # <--- CRITICAL: If lost, reset immediately
+        'Vis/MinInliers': '10',         # <--- CRITICAL: Track with fewer points
+        'Odom/Strategy': '0',           # 0=Frame-to-Frame (Faster for drones)
+        'wait_for_transform': 0.2,
+        'Optimizer/GravitySigma': '0.3',
+
         # IMU init
         'wait_imu_to_init': True,
 
         # TF publishing
         'publish_tf': True,
+
+
+        #for 2d maps
+        'Grid/3D': True,
+        'Grid/RayTracing': True,
+        'Grid/MaxGroundHeight': '0.1', 
+        'Grid/MaxObstacleHeight': '2.0',
+        'Grid/NoiseFilteringRadius': '0.05',
+        'Grid/NoiseFilteringMinNeighbors': '2',
     }
 
     return LaunchDescription([
@@ -96,32 +112,16 @@ def generate_launch_description():
                                 {'use_sim_time': True}
                                 ]
                 ),
+                
+
+
                 # Node(
-                #         package='rtabmap_odom',
-                #         executable='rgbd_odometry',
-                #         output='screen',
-                #         parameters=[{
-                #             **common_parameters, 
-                #             'frame_id': 'base_link',
-                #             'odom_frame_id': 'odom',
-                #             'publish_tf': True
-                #         }],
-                #         remappings=[
-                #             ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
-                #             ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
-                #             ('depth/image', '/depth_camera'),
-                #             ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
-                #         ]
-                #     ),
-
-
-                Node(
-                    package='drone_slam_pkg',
-                    executable='odom_drone_tf',
-                    name='odom_drone_tf',
-                    output='screen',
-                    parameters=[{'use_sim_time': True}]
-                ),
+                #     package='drone_slam_pkg',
+                #     executable='odom_drone_tf_single',
+                #     name='odom_drone_tf_single',
+                #     output='screen',
+                #     parameters=[{'use_sim_time': True}]
+                # ),
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -139,6 +139,7 @@ def generate_launch_description():
                         ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
                         ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
                         ('depth/image', '/depth_camera'),
+
                     ],
                 ),
 
@@ -165,8 +166,8 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
-                        ('odom', '/rtabmap/odom'),
+                        # ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('odom', '/odom'),
                     ],
                     arguments=['-d'],   # delete previous ~/.ros/rtabmap.db (same behavior as many examples)
                 ),
@@ -180,8 +181,8 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
-                        ('odom', '/rtabmap/odom'),
+                        # ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('odom', '/odom'),
                     ],
                 ),
 

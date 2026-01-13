@@ -11,7 +11,7 @@ from rclpy.qos import qos_profile_system_default
 
 class OdomTfPublisher(Node):
     def __init__(self):
-        super().__init__('odom_drone_tf')
+        super().__init__('odom_drone_tf_single')
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
         qos_profile = QoSProfile(
