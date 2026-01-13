@@ -30,13 +30,13 @@ class OdomTfPublisher(Node):
          # Publisher for path
         self.path_pub = self.create_publisher(Path, 'drone_path', 10)
         self.path_msg = Path()
-        self.path_msg.header.frame_id = 'x500_depth_0/odom'
+        self.path_msg.header.frame_id = 'odom'
 
     def odom_callback(self, msg: VehicleOdometry):
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'x500_depth_0/odom'
-        t.child_frame_id = 'x500_depth_0/base_link'
+        t.header.frame_id = 'odom'
+        t.child_frame_id = 'base_link'
 
         # Position
         t.transform.translation.x = float(msg.position[0])
@@ -57,7 +57,7 @@ class OdomTfPublisher(Node):
         # Append current pose to path
         pose = PoseStamped()
         pose.header.stamp = t.header.stamp
-        pose.header.frame_id = 'x500_depth_0/odom'
+        pose.header.frame_id = 'odom'
         pose.pose.position.x = t.transform.translation.x
         pose.pose.position.y = t.transform.translation.y
         pose.pose.position.z = t.transform.translation.z

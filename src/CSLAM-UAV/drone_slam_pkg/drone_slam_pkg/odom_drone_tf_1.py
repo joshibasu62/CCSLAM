@@ -11,7 +11,7 @@ from rclpy.qos import qos_profile_system_default
 
 class OdomTfPublisher(Node):
     def __init__(self):
-        super().__init__('odom_drone_tf')
+        super().__init__('odom_drone_tf_1')
         self.tf_broadcaster = tf2_ros.TransformBroadcaster(self)
 
         qos_profile = QoSProfile(
@@ -22,21 +22,21 @@ class OdomTfPublisher(Node):
 
         self.subscription = self.create_subscription(
             VehicleOdometry,
-            '/fmu/out/vehicle_odometry',
+            'px4_1/fmu/out/vehicle_odometry',
             self.odom_callback,
             qos_profile_system_default
         )
 
          # Publisher for path
-        self.path_pub = self.create_publisher(Path, 'drone_path', 10)
+        self.path_pub = self.create_publisher(Path, 'drone_path_1', 10)
         self.path_msg = Path()
-        self.path_msg.header.frame_id = 'x500_depth_0/odom'
+        self.path_msg.header.frame_id = 'x500_depth_1/odom'
 
     def odom_callback(self, msg: VehicleOdometry):
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = 'x500_depth_0/odom'
-        t.child_frame_id = 'x500_depth_0/base_link'
+        t.header.frame_id = 'x500_depth_1/odom'
+        t.child_frame_id = 'x500_depth_1/base_link'
 
         # Position
         t.transform.translation.x = float(msg.position[0])
@@ -57,7 +57,7 @@ class OdomTfPublisher(Node):
         # Append current pose to path
         pose = PoseStamped()
         pose.header.stamp = t.header.stamp
-        pose.header.frame_id = 'x500_depth_0/odom'
+        pose.header.frame_id = 'x500_depth_1/odom'
         pose.pose.position.x = t.transform.translation.x
         pose.pose.position.y = t.transform.translation.y
         pose.pose.position.z = t.transform.translation.z

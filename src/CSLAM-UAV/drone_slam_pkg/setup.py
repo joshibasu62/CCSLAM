@@ -46,6 +46,7 @@ setup(
     entry_points={
         'console_scripts': [
             'odom_drone_tf = drone_slam_pkg.odom_drone_tf:main',
+            'odom_drone_tf_1 = drone_slam_pkg.odom_drone_tf_1:main',
         ],
     },
 )
