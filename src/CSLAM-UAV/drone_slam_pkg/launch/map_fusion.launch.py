@@ -281,6 +281,22 @@ def generate_launch_description():
                     ],
                 ),
 
+                #map fusion
+                # Node(
+                #     package='drone_slam_pkg', # REPLACE with your actual package name if the script is inside it
+                #     executable='cloud_merger', # OR use 'execute_process' below if not installed
+                #     name='map_merger',
+                #     output='screen',
+                #     parameters=[{
+                #         'drone_0_topic': '/x500_drone_0/cloud_map',
+                #         'drone_1_topic': '/x500_drone_1/cloud_map',
+                #         'output_topic': '/comboMapData',
+                #         'target_frame': 'world',
+                #         'use_sim_time': True
+                #     }]
+                # ),
+
+
                 Node(
                     package="rviz2",
                     executable="rviz2",

@@ -74,7 +74,7 @@ def generate_launch_description():
              cmd=['MicroXRCEAgent','udp4', '--port', '8888']
         ),
         TimerAction(
-            period=15.0,
+            period=1.0,
             actions=[
                 Node(
                     package='ros_gz_bridge',

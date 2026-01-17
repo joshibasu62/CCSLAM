@@ -22,7 +22,7 @@ class OdomTfPublisher(Node):
 
         self.subscription = self.create_subscription(
             VehicleOdometry,
-            '/fmu/out/vehicle_odometry',
+            'x500_depth_0/odom',
             self.odom_callback,
             qos_profile_system_default
         )
