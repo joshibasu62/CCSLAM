@@ -50,12 +50,12 @@ def generate_launch_description():
 
 
         #for 2d maps
-        'Grid/3D': True,
-        'Grid/RayTracing': True,
-        'Grid/MaxGroundHeight': '0.1', 
-        'Grid/MaxObstacleHeight': '2.0',
-        'Grid/NoiseFilteringRadius': '0.05',
-        'Grid/NoiseFilteringMinNeighbors': '2',
+        # 'Grid/3D': True,
+        # 'Grid/RayTracing': True,
+        # 'Grid/MaxGroundHeight': '0.1', 
+        # 'Grid/MaxObstacleHeight': '2.0',
+        # 'Grid/NoiseFilteringRadius': '0.05',
+        # 'Grid/NoiseFilteringMinNeighbors': '2',
     }
 
     return LaunchDescription([
@@ -166,7 +166,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        # ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
                         ('odom', '/odom'),
                     ],
                     arguments=['-d'],   # delete previous ~/.ros/rtabmap.db (same behavior as many examples)
@@ -181,7 +181,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        # ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
+                        ('imu', '/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu'),
                         ('odom', '/odom'),
                     ],
                 ),

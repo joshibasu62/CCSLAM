@@ -7,89 +7,47 @@ import os
 
 def generate_launch_description():
     px4_dir = os.path.join(os.getenv("HOME"), "PX4-Autopilot")
-    
-    # Path to the file containing the URDF you provided (both drones in one file)
     urdf_file = "/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/two_drones.urdf"
 
-    # -------------------------------------------------------------------------
-    # VSLAM Parameters (Specific to Drone 0)
-    # -------------------------------------------------------------------------
-    vslam_params_0 = {
-        'use_sim_time': True,
-        'frame_id': 'x500_drone_0/base_link',
-        'map_frame_id': 'x500_drone_0/map',
-        'odom_frame_id': 'x500_drone_0/odom',
-        
-        'subscribe_rgbd': True,
-        'subscribe_depth': False,      # We use rgbd_sync
-        'subscribe_imu': True,
+    def get_vslam_params(drone_ns, db_name):
+        return {
+            'use_sim_time': True,
+            'frame_id': f'{drone_ns}/base_link',
+            'map_frame_id': f'{drone_ns}/map',
+            'odom_frame_id': f'{drone_ns}/odom',
+            
+            'subscribe_rgbd': True,
+            'subscribe_depth': False,
+            'subscribe_imu': True,
+            'approx_sync': False, # Sync done in rgbd_sync
+            'queue_size': 200,
+            'sync_queue_size': 100,
+            
+            'Odom/ResetCountdown': '1',     
+            'Vis/MinInliers': '10',         
+            'Odom/Strategy': '0',           
+            'wait_for_transform': 0.2,
+            'Optimizer/GravitySigma': '0.3',
+            'wait_imu_to_init': True,
+            'publish_tf': True,
 
-        'approx_sync': False,          # Sync is done by rgbd_sync
-        'queue_size': 200,
-        'sync_queue_size': 100,
-        
-        'Odom/ResetCountdown': '1',     
-        'Vis/MinInliers': '10',         
-        'Odom/Strategy': '0',           
-        'wait_for_transform': 0.2,
-        'Optimizer/GravitySigma': '0.3',
-        'wait_imu_to_init': True,
-        'publish_tf': True,
-
-        'Grid/3D': True,
-        'Grid/RayTracing': True,
-        'Grid/MaxGroundHeight': '0.1', 
-        'Grid/MaxObstacleHeight': '2.0',
-        'Grid/NoiseFilteringRadius': '0.05',
-        'Grid/NoiseFilteringMinNeighbors': '2',
-        
-        'database_path': '~/.ros/rtabmap_drone_0.db'
-    }
-
-    # -------------------------------------------------------------------------
-    # VSLAM Parameters (Specific to Drone 1)
-    # -------------------------------------------------------------------------
-    vslam_params_1 = {
-        'use_sim_time': True,
-        'frame_id': 'x500_drone_1/base_link',
-        'map_frame_id': 'x500_drone_1/map',
-        'odom_frame_id': 'x500_drone_1/odom',
-        
-        'subscribe_rgbd': True,
-        'subscribe_depth': False,
-        'subscribe_imu': True,
-
-        'approx_sync': False,
-        'queue_size': 200,
-        'sync_queue_size': 100,
-        
-        'Odom/ResetCountdown': '1',     
-        'Vis/MinInliers': '10',         
-        'Odom/Strategy': '0',           
-        'wait_for_transform': 0.2,
-        'Optimizer/GravitySigma': '0.3',
-        'wait_imu_to_init': True,
-        'publish_tf': True,
-
-        'Grid/3D': True,
-        'Grid/RayTracing': True,
-        'Grid/MaxGroundHeight': '0.1', 
-        'Grid/MaxObstacleHeight': '2.0',
-        'Grid/NoiseFilteringRadius': '0.05',
-        'Grid/NoiseFilteringMinNeighbors': '2',
-        
-        'database_path': '~/.ros/rtabmap_drone_1.db'
-    }
+            # 'Grid/3D': True,
+            # 'Grid/RayTracing': True,
+            # 'Grid/MaxGroundHeight': '0.1', 
+            # 'Grid/MaxObstacleHeight': '2.0',
+            # 'Grid/NoiseFilteringRadius': '0.05',
+            # 'Grid/NoiseFilteringMinNeighbors': '2',
+            
+            'database_path': f'~/.ros/{db_name}.db'
+        }
 
     return LaunchDescription([
-        # 1. Start Gazebo + Drone 0 (PX4)
         ExecuteProcess(
             cmd=["gnome-terminal", "--", "make", "-C", px4_dir, "px4_sitl", "gz_x500_depth"],
             output="screen",
             shell=True
         ),
 
-        # 2. QGroundControl
         ExecuteProcess(
             cmd=["gnome-terminal", "--", "./QGroundControl-x86_64.AppImage"],
             cwd=os.path.expanduser("~/Downloads"),
@@ -97,13 +55,11 @@ def generate_launch_description():
             shell=True
         ),
 
-        # 3. MicroXRCEAgent
         ExecuteProcess(
             cmd=["MicroXRCEAgent", "udp4", "--port", "8888"],
             output="screen",
         ),
 
-        # 4. Start Drone 1 (PX4) - Delayed
         TimerAction(
             period=15.0,
             actions=[
@@ -122,11 +78,9 @@ def generate_launch_description():
             ],
         ),
 
-        # 5. Bring up SLAM Infrastructure
         TimerAction(
             period=20.0,
             actions=[
-                # A. Global Robot State Publisher (Loads your combined URDF)
                 Node(
                     package="robot_state_publisher",
                     executable="robot_state_publisher",
@@ -138,23 +92,21 @@ def generate_launch_description():
                     ],
                 ),
 
-                # B. Static TF: World -> Maps (Set initial pose offsets here)
+                # B. Static TF: World -> Maps (Initial Poses)
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    name="world_to_d0_map",
                     arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
                     output="screen",
                 ),
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    name="world_to_d1_map",
                     arguments=["0", "-8", "0", "0", "0", "1.5708", "world", "x500_drone_1/map"],
                     output="screen",
                 ),
 
-                # C. ROS GZ Bridge (Handles topics for BOTH drones)
+                # C. ROS GZ Bridge
                 Node(
                     package="ros_gz_bridge",
                     executable="parameter_bridge",
@@ -164,32 +116,60 @@ def generate_launch_description():
                     arguments=[
                         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
                         
-                        # Drone 0 Raw Topics
+                        # Drone 0
                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
                         "/world/default/model/x500_depth_0/link/camera_link/sensor/StereoOV7251/depth_image@sensor_msgs/msg/Image[gz.msgs.Image",
                         "/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
 
-                        # Drone 1 Raw Topics
+                        # Drone 1
                         "/world/default/model/x500_depth_1/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
                         "/world/default/model/x500_depth_1/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
                         "/world/default/model/x500_depth_1/link/camera_link/sensor/StereoOV7251/depth_image@sensor_msgs/msg/Image[gz.msgs.Image",
                         "/world/default/model/x500_depth_1/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
                     ],
                     remappings=[
-                        # Drone 0 Remappings
+                        # Drone 0
                         ("/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image", "/x500_drone_0/rgb/image"),
                         ("/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info", "/x500_drone_0/rgb/camera_info"),
                         ("/world/default/model/x500_depth_0/link/camera_link/sensor/StereoOV7251/depth_image", "/x500_drone_0/depth/image"),
                         ("/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu", "/x500_drone_0/imu/data"),
 
-                        # Drone 1 Remappings
+                        # Drone 1
                         ("/world/default/model/x500_depth_1/link/camera_link/sensor/IMX214/image", "/x500_drone_1/rgb/image"),
                         ("/world/default/model/x500_depth_1/link/camera_link/sensor/IMX214/camera_info", "/x500_drone_1/rgb/camera_info"),
                         ("/world/default/model/x500_depth_1/link/camera_link/sensor/StereoOV7251/depth_image", "/x500_drone_1/depth/image"),
                         ("/world/default/model/x500_depth_1/link/base_link/sensor/imu_sensor/imu", "/x500_drone_1/imu/data"),
                     ],
                 ),
+
+                
+                # --- DRONE 0 ---
+                # Base -> IMU (Fixes "Dropping IMU data")
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_0/base_link', 'x500_depth_0/base_link/imu_sensor']),
+                # Base -> Camera Link
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_0/base_link', 'x500_drone_0/camera_link']),
+                # Camera Link -> IMX214 (RGB Optical Frame)
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_0/camera_link', 'x500_depth_0/camera_link/IMX214']),
+                # Camera Link -> StereoOV7251 (Depth) <--- ADDED THIS
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.01233', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_0/camera_link', 'x500_drone_0/camera_link/StereoOV7251']),
+
+                # --- DRONE 1 ---
+                # Base -> IMU
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_1/base_link', 'x500_depth_1/base_link/imu_sensor']),
+                # Base -> Camera Link
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_1/base_link', 'x500_drone_1/camera_link']),
+                # Camera Link -> IMX214
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_1/camera_link', 'x500_depth_1/camera_link/IMX214']),
+                Node(package='tf2_ros', executable='static_transform_publisher',
+                     arguments=['0.01233', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_1/camera_link', 'x500_drone_1/camera_link/StereoOV7251']),
 
                 # ==========================================================
                 # DRONE 0 NODES
@@ -219,7 +199,7 @@ def generate_launch_description():
                     name="rgbd_odometry",
                     namespace="x500_drone_0",
                     output="screen",
-                    parameters=[vslam_params_0],
+                    parameters=[get_vslam_params("x500_drone_0", "rtabmap_drone_0")],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
                     ],
@@ -230,12 +210,12 @@ def generate_launch_description():
                     name="rtabmap",
                     namespace="x500_drone_0",
                     output="screen",
-                    parameters=[vslam_params_0],
+                    parameters=[get_vslam_params("x500_drone_0", "rtabmap_drone_0")],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
                         ("odom", "/x500_drone_0/odom"),
                     ],
-                    arguments=["-d"],
+                    arguments=["-d"], # Uncomment to delete map on start
                 ),
                 Node(
                     package="rtabmap_viz",
@@ -243,7 +223,7 @@ def generate_launch_description():
                     name="rtabmap_viz",
                     namespace="x500_drone_0",
                     output="screen",
-                    parameters=[vslam_params_0],
+                    parameters=[get_vslam_params("x500_drone_0", "rtabmap_drone_0")],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
                         ("odom", "/x500_drone_0/odom"),
@@ -278,7 +258,7 @@ def generate_launch_description():
                     name="rgbd_odometry",
                     namespace="x500_drone_1",
                     output="screen",
-                    parameters=[vslam_params_1],
+                    parameters=[get_vslam_params("x500_drone_1", "rtabmap_drone_1")],
                     remappings=[
                         ("imu", "/x500_drone_1/imu/data"),
                     ],
@@ -289,12 +269,12 @@ def generate_launch_description():
                     name="rtabmap",
                     namespace="x500_drone_1",
                     output="screen",
-                    parameters=[vslam_params_1],
+                    parameters=[get_vslam_params("x500_drone_1", "rtabmap_drone_1")],
                     remappings=[
                         ("imu", "/x500_drone_1/imu/data"),
                         ("odom", "/x500_drone_1/odom"),
                     ],
-                    arguments=["-d"],
+                    arguments=["-d"], # Uncomment to delete map on start
                 ),
                 Node(
                     package="rtabmap_viz",
@@ -302,7 +282,7 @@ def generate_launch_description():
                     name="rtabmap_viz",
                     namespace="x500_drone_1",
                     output="screen",
-                    parameters=[vslam_params_1],
+                    parameters=[get_vslam_params("x500_drone_1", "rtabmap_drone_1")],
                     remappings=[
                         ("imu", "/x500_drone_1/imu/data"),
                         ("odom", "/x500_drone_1/odom"),

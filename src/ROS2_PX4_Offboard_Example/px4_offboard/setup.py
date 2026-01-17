@@ -31,6 +31,8 @@ setup(
                 'visualizer = px4_offboard.visualizer:main',
                 'velocity_control = px4_offboard.velocity_control:main',
                 'control = px4_offboard.control:main',
+                'velocity_control1 = px4_offboard.velocity_control1:main',
+                'control1 = px4_offboard.control1:main',
                 'processes = px4_offboard.processes:main',
                 'offboard_position_control = px4_offboard.offboard_position_control:main',
                 'position_control_node = px4_offboard.position_control_node:main',
