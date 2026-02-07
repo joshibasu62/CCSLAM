@@ -146,7 +146,7 @@ def generate_launch_description():
                      arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_0/base_link', 'x500_depth_0/base_link/imu_sensor']),
              
                 Node(package='tf2_ros', executable='static_transform_publisher',
-                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_0/base_link', 'x500_drone_0/camera_link']),
+                     arguments=['0.12', '0.03', '0.242', '-1.570796327', '0', '-1.570796327', 'x500_drone_0/base_link', 'x500_drone_0/camera_link']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_0/camera_link', 'x500_depth_0/camera_link/IMX214']),
@@ -160,7 +160,7 @@ def generate_launch_description():
                      arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_1/base_link', 'x500_depth_1/base_link/imu_sensor']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
-                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_1/base_link', 'x500_drone_1/camera_link']),
+                     arguments=['0.12', '0.03', '0.242', '-1.570796327', '0', '-1.570796327', 'x500_drone_1/base_link', 'x500_drone_1/camera_link']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_1/camera_link', 'x500_depth_1/camera_link/IMX214']),
