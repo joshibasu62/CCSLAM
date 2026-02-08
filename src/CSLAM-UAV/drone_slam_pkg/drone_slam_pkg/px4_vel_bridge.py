@@ -3,7 +3,8 @@ import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
 from geometry_msgs.msg import Twist
-from px4_msgs.msg import OffboardControlMode, TrajectorySetpoint, VehicleCommand, VehicleStatus
+from px4_msgs.msg import OffboardControlMode, TrajectorySetpoint, VehicleCommand, VehicleStatus, VehicleOdometry
+import math
 
 class PX4VelBridge(Node):
     def __init__(self):
@@ -21,6 +22,9 @@ class PX4VelBridge(Node):
             Twist, '/cmd_vel', self.cmd_vel_callback, 10)
         self.status_sub = self.create_subscription(
             VehicleStatus, '/fmu/out/vehicle_status_v1', self.status_callback, qos_profile)
+        # We need Odometry to get current Yaw
+        self.odom_sub = self.create_subscription(
+            VehicleOdometry, '/fmu/out/vehicle_odometry', self.odom_callback, qos_profile)
 
         # Publishers
         self.offboard_ctrl_mode_pub = self.create_publisher(
@@ -34,15 +38,24 @@ class PX4VelBridge(Node):
         self.nav_state = VehicleStatus.NAVIGATION_STATE_MAX
         self.arming_state = VehicleStatus.ARMING_STATE_DISARMED
         self.current_vel = Twist()
+        self.current_yaw = 0.0
         self.target_height = -2.0  # Flight altitude (NED, so negative is up)
         
-        # Timer for heartbeat (must be > 2Hz)
+        # Timer
         self.timer = self.create_timer(0.05, self.timer_callback) # 20Hz
         self.offboard_set = False
 
     def status_callback(self, msg):
         self.nav_state = msg.nav_state
         self.arming_state = msg.arming_state
+
+    def odom_callback(self, msg):
+        # Extract Yaw from Quaternion (PX4 q is [w, x, y, z])
+        q = msg.q
+        # yaw (z-axis rotation)
+        siny_cosp = 2 * (q[0] * q[3] + q[1] * q[2])
+        cosy_cosp = 1 - 2 * (q[2] * q[2] + q[3] * q[3])
+        self.current_yaw = math.atan2(siny_cosp, cosy_cosp)
 
     def cmd_vel_callback(self, msg):
         self.current_vel = msg
@@ -77,37 +90,40 @@ class PX4VelBridge(Node):
         offboard_msg.body_rate = False
         self.offboard_ctrl_mode_pub.publish(offboard_msg)
 
-        # 2. Convert cmd_vel (ENU) to TrajectorySetpoint (NED)
-        # ROS ENU: X=Forward, Y=Left, Z=Up
-        # PX4 NED: X=North(Forward), Y=East(Right), Z=Down
+        # 2. Convert Nav2 Body Frame (Forward/Left) to PX4 NED Frame (North/East)
+        # Nav2 X (Forward) -> Cos(Yaw)*X - Sin(Yaw)*Y
+        # Nav2 Y (Left)    -> Sin(Yaw)*X + Cos(Yaw)*Y
+        
+        # ROS Input
+        vx_ros = self.current_vel.linear.x
+        vy_ros = self.current_vel.linear.y
+        wz_ros = self.current_vel.angular.z
+
+        # Coordinate Rotation
+        # PX4 NED X (North)
+        vel_north = vx_ros * math.cos(self.current_yaw) - vy_ros * math.sin(self.current_yaw)
+        # PX4 NED Y (East)
+        vel_east  = vx_ros * math.sin(self.current_yaw) + vy_ros * math.cos(self.current_yaw)
+
         traj_msg = TrajectorySetpoint()
         traj_msg.position = [float('nan'), float('nan'), float('nan')]
         
-        # Map ROS Linear X to PX4 X (Forward)
-        # Map ROS Linear Y to PX4 Y (Right = -Left)
-        # Map ROS Linear Z to PX4 Z (Down = -Up)
-        
-        # NOTE: Nav2 gives velocity in Map/Base frame. 
-        # For simplicity in simple offboard, we send velocity in body frame or local frame.
-        # Here we assume cmd_vel is relative to the drone's heading (standard Nav2 output)
-        
+        # Velocity in NED
         traj_msg.velocity = [
-            self.current_vel.linear.x, 
-            -self.current_vel.linear.y, 
-            0.0 # Don't let nav2 control vertical velocity directly, hold height
+            vel_north, 
+            vel_east, 
+            0.0 # Velocity Control for XY, Position for Z
         ]
         
-        # Yaw Rate
-        traj_msg.yawspeed = -self.current_vel.angular.z # ROS CCW + / PX4 CW + check this based on SITL behavior
+        # Yaw Rate (Inverted because NED Z is down, ROS Z is up)
+        traj_msg.yawspeed = -wz_ros 
 
-        # Altitude Hold Logic (Simple P-Controller to stay at target_height)
-        # We enforce position control for Z, velocity for XY
+        # Altitude Hold
         traj_msg.position[2] = self.target_height 
 
         self.traj_setpoint_pub.publish(traj_msg)
 
-        # 3. Auto-Arm and Takeoff Logic (simplistic)
-        # If we are receiving commands and not in offboard, try to switch
+        # 3. Auto-Arm and Takeoff Logic
         if self.offboard_set == False and self.current_vel.linear.x != 0.0:
             self.engage_offboard_mode()
             self.arm()
