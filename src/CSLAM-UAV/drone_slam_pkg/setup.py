@@ -12,6 +12,7 @@ def package_files(directory):
     return paths
 
 model_files = package_files('urdf')
+yaml_files = package_files('config')  # Only YAML files
 
 setup(
     name=package_name,
@@ -27,6 +28,7 @@ setup(
         # Launch files
         ('share/' + package_name + '/launch',
          glob.glob('launch/*.launch.py')),
+         
 
         # Models (KEEP STRUCTURE)
         *[
@@ -35,6 +37,13 @@ setup(
                 [f]
             )
             for f in model_files
+        ],
+        *[
+            (
+                os.path.join('share', package_name, os.path.dirname(f)),
+                [f]
+            )
+            for f in yaml_files
         ],
     ],
     install_requires=['setuptools'],
@@ -49,6 +58,7 @@ setup(
             'odom_drone_tf_1 = drone_slam_pkg.odom_drone_tf_1:main',
             'odom_drone_tf_single = drone_slam_pkg.odom_drone_tf_single:main',
             'cloud_merger = drone_slam_pkg.cloud_merger:main',
+            'px4_vel_bridge = drone_slam_pkg.px4_vel_bridge:main',
         ],
     },
 )
