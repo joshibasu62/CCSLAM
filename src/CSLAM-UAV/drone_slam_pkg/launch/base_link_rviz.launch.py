@@ -52,33 +52,33 @@ def generate_launch_description():
     # }
     vslam_params = {
         'use_sim_time': True,
-            'frame_id': 'base_link',
-            'map_frame_id': 'map',
-            'odom_frame_id': 'odom',
-            
-            'subscribe_rgbd': True,
-            'subscribe_depth': False,
-            'subscribe_imu': True,
-            'approx_sync': False, # Sync done in rgbd_sync
-            'queue_size': 200,
-            'sync_queue_size': 100,
-            
-            'Odom/ResetCountdown': '1',     
-            'Vis/MinInliers': '15',         
-            'Odom/Strategy': '0',           
-            'wait_for_transform': 0.2,
-            'Optimizer/GravitySigma': '0.3',
-            'wait_imu_to_init': True,
-            'publish_tf': True,
+        'frame_id': 'base_link',
+        'map_frame_id': 'map',
+        'odom_frame_id': 'odom',
+        
+        'subscribe_rgbd': True,
+        'subscribe_depth': False,
+        'subscribe_imu': True,
+        'approx_sync': False, # Sync done in rgbd_sync
+        'queue_size': 200,
+        'sync_queue_size': 100,
+        
+        'Odom/ResetCountdown': '1',     
+        'Vis/MinInliers': '15',         
+        'Odom/Strategy': '0',           
+        'wait_for_transform': 0.2,
+        'Optimizer/GravitySigma': '0.3',
+        'wait_imu_to_init': True,
+        'publish_tf': True,
 
-            # 'Grid/3D': True,
-            # 'Grid/RayTracing': True,
-            # 'Grid/MaxGroundHeight': '0.1', 
-            # 'Grid/MaxObstacleHeight': '2.0',
-            # 'Grid/NoiseFilteringRadius': '0.05',
-            # 'Grid/NoiseFilteringMinNeighbors': '2',
-            
-            # 'database_path': f'~/.ros/{db_name}.db'
+        # 'Grid/3D': True,
+        # 'Grid/RayTracing': True,
+        # 'Grid/MaxGroundHeight': '0.1', 
+        # 'Grid/MaxObstacleHeight': '2.0',
+        # 'Grid/NoiseFilteringRadius': '0.05',
+        # 'Grid/NoiseFilteringMinNeighbors': '2',
+        
+        # 'database_path': f'~/.ros/{db_name}.db'
     }
 
     return LaunchDescription([

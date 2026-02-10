@@ -8,7 +8,7 @@ import os
 def generate_launch_description():
     px4_dir = os.path.join(os.getenv("HOME"), "PX4-Autopilot")
     urdf_file = "/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/two_drones.urdf"
-
+    rviz_dir = os.path.join(get_package_share_directory("drone_slam_pkg"),"rviz")
     def get_vslam_params(drone_ns, db_name):
         return {
             'use_sim_time': True,
@@ -24,7 +24,7 @@ def generate_launch_description():
             'sync_queue_size': 100,
             
             'Odom/ResetCountdown': '1',     
-            'Vis/MinInliers': '10',         
+            'Vis/MinInliers': '15',         
             'Odom/Strategy': '0',           
             'wait_for_transform': 0.2,
             'Optimizer/GravitySigma': '0.3',
@@ -68,7 +68,7 @@ def generate_launch_description():
                         "gnome-terminal", "--", "bash", "-c",
                         "cd " + px4_dir +
                         " && PX4_SYS_AUTOSTART=4001 "
-                        'PX4_GZ_MODEL_POSE="0,-8,0" '
+                        'PX4_GZ_MODEL_POSE="0,-0.8,0" '
                         'PX4_GZ_MODEL_ORIENTATION="0,0,1.5708" '
                         "PX4_SIM_MODEL=gz_x500_depth "
                         "./build/px4_sitl_default/bin/px4 -i 1; exec bash"
@@ -95,13 +95,13 @@ def generate_launch_description():
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    arguments=["0", "0", "0", "0", "0", "1.5708", "world", "x500_drone_0/map"],
+                    arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
                     output="screen",
                 ),
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    arguments=["0", "-8", "0", "0", "0", "1.5708", "world", "x500_drone_1/map"],
+                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
                     output="screen",
                 ),
 
@@ -292,6 +292,24 @@ def generate_launch_description():
                     )],
                     parameters=[{"use_sim_time": True}],
                 ),
+
+                # Node(
+                #     package="rviz2",
+                #     executable="rviz2",
+                #     name="rviz_drone_0",
+                #     output="screen",
+                #     arguments=["-d", os.path.join(rviz_dir, "drone_0.rviz")],
+                #     parameters=[{"use_sim_time": True}],
+                # ),
+
+                # Node(
+                #     package="rviz2",
+                #     executable="rviz2",
+                #     name="rviz_drone_1",
+                #     output="screen",
+                #     arguments=["-d", os.path.join(rviz_dir, "drone_1.rviz")],
+                #     parameters=[{"use_sim_time": True}],
+                # ),
             ],
         ),
     ])

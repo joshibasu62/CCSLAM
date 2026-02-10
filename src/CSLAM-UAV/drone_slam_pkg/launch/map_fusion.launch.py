@@ -68,7 +68,7 @@ def generate_launch_description():
                         "gnome-terminal", "--", "bash", "-c",
                         "cd " + px4_dir +
                         " && PX4_SYS_AUTOSTART=4001 "
-                        'PX4_GZ_MODEL_POSE="0,-8,0" '
+                        'PX4_GZ_MODEL_POSE="0,-0.8,0" '
                         'PX4_GZ_MODEL_ORIENTATION="0,0,1.5708" '
                         "PX4_SIM_MODEL=gz_x500_depth "
                         "./build/px4_sitl_default/bin/px4 -i 1; exec bash"
@@ -101,7 +101,7 @@ def generate_launch_description():
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    arguments=["0", "-8", "0", "0", "0", "1.5708", "world", "x500_drone_1/map"],
+                    arguments=["0", "-0.8", "0", "0", "0", "1.5708", "world", "x500_drone_1/map"],
                     output="screen",
                 ),
 
