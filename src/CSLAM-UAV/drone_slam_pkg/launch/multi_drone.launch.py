@@ -92,18 +92,18 @@ def generate_launch_description():
                 #     ],
                 # ),
 
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
-                    output="screen",
-                ),
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
-                    output="screen",
-                ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
+                #     output="screen",
+                # ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                #     output="screen",
+                # ),
 
                 Node(
                     package="ros_gz_bridge",
