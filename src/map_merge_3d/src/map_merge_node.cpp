@@ -121,6 +121,8 @@ void MapMerge3d::discovery()
 
 void MapMerge3d::mapCompositing()
 {
+  RCLCPP_DEBUG(this->get_logger(), "Map compositing started");
+  
   std::vector<PointCloudConstPtr> clouds = getMaps();
   if (clouds.empty()) return;
 
@@ -140,6 +142,8 @@ void MapMerge3d::mapCompositing()
   output_msg.header.stamp = this->now();
 
   merged_map_publisher_->publish(output_msg);
+
+  RCLCPP_DEBUG(this->get_logger(), "Map Compositing ended");
 }
 
 void MapMerge3d::transformsEstimation()
