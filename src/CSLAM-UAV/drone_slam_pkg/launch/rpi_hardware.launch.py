@@ -46,7 +46,7 @@ def generate_launch_description():
 
         Node(
             package='drone_slam_pkg', # CHANGE THIS to your package name
-            executable='px4_imu_bridge.py', # Ensure this is registered in setup.py or use full path
+            executable='px4_imu_bridge', # Ensure this is registered in setup.py or use full path
             name='px4_imu_converter',
             output='screen'
         ),
@@ -117,5 +117,28 @@ def generate_launch_description():
                 ('odom', '/odom'), # Local odometry
             ],
             arguments=['-d'], # Delete old database
+        ),
+        Node(
+            package='rtabmap_viz',
+            executable='rtabmap_viz',
+            name='rtabmap_viz',
+            namespace='rtabmap',
+            output='screen',
+            parameters=[vslam_params],
+            remappings=[
+                ("imu", "/imu/data_converted"),
+                ('odom', '/odom'),
+            ],
+        ),
+
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            output='screen',
+            arguments=['-d', os.path.join(
+                get_package_share_directory('rtabmap_rviz_plugins'),
+                'launch', 'rtabmap.rviz'
+            )],
+            parameters=[{'use_sim_time': True}]
         ),
     ])
