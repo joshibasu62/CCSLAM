@@ -59,6 +59,7 @@ setup(
             'odom_drone_tf_single = drone_slam_pkg.odom_drone_tf_single:main',
             'cloud_merger = drone_slam_pkg.cloud_merger:main',
             'px4_vel_bridge = drone_slam_pkg.px4_vel_bridge:main',
+            'px4_imu_bridge = drone_slam_pkg.px4_imu_bridge:main',
         ],
     },
 )
