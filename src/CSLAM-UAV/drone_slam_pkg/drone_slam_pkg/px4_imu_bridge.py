@@ -10,7 +10,7 @@ class PX4IMUBridge(Node):
     def __init__(self):
         super().__init__('px4_imu_bridge')
 
-        # QoS for PX4 (Best Effort is required for UDP/Serial)
+        # QoS for PX4 
         qos_profile = QoSProfile(
             reliability=ReliabilityPolicy.BEST_EFFORT,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
@@ -18,7 +18,7 @@ class PX4IMUBridge(Node):
             depth=1
         )
 
-        # Subscriber to PX4 SensorCombined (Replacing VehicleImu)
+        # Subscriber to PX4 SensorCombined 
         self.subscription = self.create_subscription(
             SensorCombined,
             '/fmu/out/sensor_combined',
@@ -32,28 +32,18 @@ class PX4IMUBridge(Node):
         imu_msg = Imu()
         imu_msg.header.stamp = self.get_clock().now().to_msg()
         imu_msg.header.frame_id = "base_link" 
-
-        # ----------------------------------------------------------------------
-        # COORDINATE FRAME CONVERSION (PX4 FRD -> ROS ENU)
-        # ----------------------------------------------------------------------
-        # PX4 uses FRD (Forward, Right, Down)
-        # ROS uses ENU (East, North, Up) - which corresponds to (Forward, Left, Up) on the body
-        # Conversion: X -> X,  Y -> -Y,  Z -> -Z
         
-        # Acceleration (m/s^2)
+        # Acceleration 
         imu_msg.linear_acceleration.x = float(msg.accelerometer_m_s2[0])
         imu_msg.linear_acceleration.y = -float(msg.accelerometer_m_s2[1]) # Invert Y
         imu_msg.linear_acceleration.z = -float(msg.accelerometer_m_s2[2]) # Invert Z
 
-        # Gyroscope (rad/s)
+        # Gyroscope 
         imu_msg.angular_velocity.x = float(msg.gyro_rad[0])
         imu_msg.angular_velocity.y = -float(msg.gyro_rad[1]) # Invert Y
         imu_msg.angular_velocity.z = -float(msg.gyro_rad[2]) # Invert Z
         
         # Orientation
-        # SensorCombined usually doesn't provide orientation (quaternions).
-        # We leave orientation empty (0,0,0,0) or identity.
-        # RTAB-Map's ImuFilter or Optimizer will estimate orientation from Gyro+Accel.
         imu_msg.orientation.w = 1.0 # Identity quaternion
         
         self.publisher.publish(imu_msg)

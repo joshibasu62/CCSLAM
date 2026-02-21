@@ -60,6 +60,7 @@ setup(
             'cloud_merger = drone_slam_pkg.cloud_merger:main',
             'px4_vel_bridge = drone_slam_pkg.px4_vel_bridge:main',
             'px4_imu_bridge = drone_slam_pkg.px4_imu_bridge:main',
+            'visual_odom_converter = drone_slam_pkg.visual_odom_converter:main',
         ],
     },
 )

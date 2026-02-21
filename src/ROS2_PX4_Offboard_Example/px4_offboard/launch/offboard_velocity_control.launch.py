@@ -46,20 +46,7 @@ def generate_launch_description():
     package_dir = get_package_share_directory('px4_offboard')
     # bash_script_path = os.path.join(package_dir, 'scripts', 'TerminatorScript.sh')
     return LaunchDescription([
-        # ExecuteProcess(cmd=['bash', bash_script_path], output='screen'),
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='visualizer',
-        #     name='visualizer'
-        # ),
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='processes',
-        #     name='processes',
-        #     prefix='gnome-terminal --'
-        # ),
+        
         Node(
             package='px4_offboard',
             namespace='px4_offboard',
@@ -73,19 +60,7 @@ def generate_launch_description():
             executable='velocity_control',
             name='velocity'
         ),
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='control1',
-        #     name='control1',
-        #     prefix='gnome-terminal --',
-        # ),
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='velocity_control1',
-        #     name='velocity1'
-        # ),
+        
         # Node(
         #     package='px4_offboard',
         #     # namespace=namespace,

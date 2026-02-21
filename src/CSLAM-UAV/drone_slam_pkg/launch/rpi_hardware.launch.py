@@ -8,10 +8,10 @@ import os
 
 def generate_launch_description():
     
-    # 1. Configuration
+    
     use_sim_time = False 
     
-    # RTAB-Map Parameters optimized for Raspberry Pi 4/5
+    
     vslam_params = {
         'use_sim_time': use_sim_time,
         'frame_id': 'base_link',
@@ -19,20 +19,20 @@ def generate_launch_description():
         'odom_frame_id': 'odom',
         
         'subscribe_rgbd': True,
-        'subscribe_depth': False, # We subscribe to RGBDWrapper, not raw depth here
+        'subscribe_depth': False, 
         'subscribe_imu': True,
         
-        'approx_sync': True, # True because IMU (FCU) and Camera are different devices
+        'approx_sync': True, 
         'queue_size': 20,
         'sync_queue_size': 20,
         
-        'Odom/Strategy': '0',           # 0=Frame-to-Frame (Fastest)
+        'Odom/Strategy': '0',           
         'Vis/MinInliers': '15',         
-        'Vis/MaxFeatures': '500',       # Reduced features for RPi CPU
-        'Rtabmap/DetectionRate': '1',   # Update map at 1Hz to save CPU
-        'Odom/ImageDecimation': '2',    # Process smaller images to speed up Odom
+        'Vis/MaxFeatures': '500',       
+        'Rtabmap/DetectionRate': '1',   
+        'Odom/ImageDecimation': '2',    
         
-        'wait_imu_to_init': False,      # Don't hang waiting for IMU if topic delays
+        'wait_imu_to_init': False,      
         'publish_tf': True,
     }
 
@@ -45,8 +45,8 @@ def generate_launch_description():
         ),
 
         Node(
-            package='drone_slam_pkg', # CHANGE THIS to your package name
-            executable='px4_imu_bridge', # Ensure this is registered in setup.py or use full path
+            package='drone_slam_pkg', 
+            executable='px4_imu_bridge', 
             name='px4_imu_converter',
             output='screen'
         ),
@@ -57,9 +57,9 @@ def generate_launch_description():
                 os.path.join(get_package_share_directory('realsense2_camera'), 'launch', 'rs_launch.py')
             ]),
             launch_arguments={
-                'align_depth.enable': 'true',       # CRITICAL for RGB-D SLAM
-                'pointcloud.enable': 'false',       # Save CPU, let RTABMap handle it
-                'depth_module.profile': '640x480x15', # Lower res/fps for Pi
+                'align_depth.enable': 'true',      
+                'pointcloud.enable': 'false',       
+                'depth_module.profile': '640x480x15', 
                 'rgb_camera.profile': '640x480x15'
             }.items()
         ),
@@ -100,7 +100,7 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params],
             remappings=[
-                ("imu", "/imu/data_converted"), # From our Python bridge
+                ("imu", "/imu/data_converted"), 
             ],
         ),
 
@@ -114,9 +114,9 @@ def generate_launch_description():
             parameters=[vslam_params],
             remappings=[
                 ("imu", "/imu/data_converted"),
-                ('odom', '/odom'), # Local odometry
+                ('odom', '/odom'), 
             ],
-            arguments=['-d'], # Delete old database
+            arguments=['-d'], 
         ),
         Node(
             package='rtabmap_viz',

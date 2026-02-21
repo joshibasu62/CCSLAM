@@ -83,19 +83,22 @@ def generate_launch_description():
 
     return LaunchDescription([
         ExecuteProcess(
+             cmd=['MicroXRCEAgent','udp4', '--port', '8888']
+        ),
+
+        ExecuteProcess(
             cmd=['gnome-terminal', '--', 'make', '-C', px4_dir, 'px4_sitl', 'gz_x500_depth'],
             output='screen',
             shell=True
         ),
+
         ExecuteProcess(
             cmd=['gnome-terminal', '--', ' ./QGroundControl-x86_64.AppImage'],
             cwd=os.path.expanduser('~/Downloads'),
             output='screen',
             shell=True
         ),
-        ExecuteProcess(
-             cmd=['MicroXRCEAgent','udp4', '--port', '8888']
-        ),
+        
         TimerAction(
             period=1.0,
             actions=[
@@ -150,6 +153,7 @@ def generate_launch_description():
                 #     output='screen',
                 #     parameters=[{'use_sim_time': True}]
                 # ),
+
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -158,7 +162,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': True,
-                        'approx_sync': True,                # sync RGB+Depth here
+                        'approx_sync': True,                
                         'approx_sync_max_interval': 0.04,
                         'queue_size': 200,
                         'sync_queue_size': 100,
@@ -171,7 +175,6 @@ def generate_launch_description():
                     ],
                 ),
 
-                # 2) Visual odometry (publishes TF rtabmap_odom -> base_link and topic /rtabmap/odom)
                 Node(
                     package='rtabmap_odom',
                     executable='rgbd_odometry',
@@ -181,11 +184,10 @@ def generate_launch_description():
                     parameters=[vslam_params],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
-                        # rgbd_image is already /rtabmap/rgbd_image from the rgbd_sync node
+                        
                     ],
                 ),
-
-                # 3) SLAM (publishes map -> rtabmap_odom TF)
+  
                 Node(
                     package='rtabmap_slam',
                     executable='rtabmap',
@@ -200,7 +202,7 @@ def generate_launch_description():
                     arguments=['-d'],   # delete previous ~/.ros/rtabmap.db (same behavior as many examples)
                 ),
 
-                # 4) Visualization
+               
                 Node(
                     package='rtabmap_viz',
                     executable='rtabmap_viz',
@@ -213,6 +215,14 @@ def generate_launch_description():
                         ('odom', '/odom'),
                     ],
                 ),
+                
+                Node(
+                    package='drone_slam_pkg', 
+                    executable='visual_odom_converter', 
+                    name='visual_odom_converter',
+                    output='screen',
+                    parameters=[{'use_sim_time': True}]
+                ),
 
                 Node(
                     package='rviz2',
@@ -224,6 +234,8 @@ def generate_launch_description():
                     )],
                     parameters=[{'use_sim_time': True}]
                 ),
+
+                
             ]
             )])
 
