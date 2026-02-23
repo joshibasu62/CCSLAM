@@ -45,21 +45,21 @@ def generate_launch_description():
         #     output='screen'
         # ),
 
-        # Node(
-        #     package='drone_slam_pkg', 
-        #     executable='px4_imu_bridge', 
-        #     name='px4_imu_converter',
-        #     output='screen'
-        # ),
+        Node(
+            package='drone_slam_pkg', 
+            executable='px4_imu_bridge', 
+            name='px4_imu_converter',
+            output='screen'
+        ),
 
         
-        # Node(
-        #     package='depthai_ros_driver',
-        #     executable='camera_node',
-        #     name='oak_camera',
-        #     output='screen',
-        #     parameters=[os.path.expanduser('~/oak_run.yaml')],
-        # ),
+        Node(
+            package='depthai_ros_driver',
+            executable='camera_node',
+            name='oak_camera',
+            output='screen',
+            parameters=[os.path.expanduser('~/oak_run.yaml')],
+        ),
         #oak_rgb_camera_optical_frame
 
         Node(
@@ -98,7 +98,7 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params],
             remappings=[
-                ("imu", "/oak/imu/data"), 
+                ("imu", "/imu/data_converted"), 
             ],
         ),
 
@@ -111,7 +111,7 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params],
             remappings=[
-                ("imu", "/oak/imu/data"),
+                ("imu", "/imu/data_converted"),
                 ('odom', '/odom'), 
             ],
             arguments=['-d'], 
@@ -124,7 +124,7 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params],
             remappings=[
-                ("imu", "/oak/imu/data"),
+                ("imu", "/imu/data_converted"),
                 ('odom', '/odom'),
             ],
         ),
