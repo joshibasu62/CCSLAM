@@ -22,7 +22,7 @@ class VisualOdomConverter(Node):
         # Subscriber: Listen to RTAB-Map / Visual SLAM odometry
         self.odom_sub = self.create_subscription(
             Odometry,
-            '/rtabmap/odom',  # Ensure this matches your launch file topic
+            '/odom',  # Ensure this matches your launch file topic
             self.odom_callback,
             10
         )
