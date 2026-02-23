@@ -66,7 +66,7 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_camera_tf',
-            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'oak-d-base-frame']
+            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_rgb_camera_optical_frame']
         ),
         
         Node(
