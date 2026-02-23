@@ -83,9 +83,9 @@ def generate_launch_description():
                 'queue_size': 20,
             }],
             remappings=[
-                ('rgb/image', '/oak/rgb/image_raw'),
-                ('rgb/camera_info', '/oak/rgb/camera_info'),
-                ('depth/image', '/oak/stereo/image_raw'),
+                ('rgb/image', '/camera/rgb/image_raw'),
+                ('rgb/camera_info', '/camera/rgb/camera_info'),
+                ('depth/image', '/camera/stereo/image_raw'),
             ],
         ),
 
