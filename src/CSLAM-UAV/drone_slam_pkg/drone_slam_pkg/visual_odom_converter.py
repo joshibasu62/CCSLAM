@@ -36,7 +36,7 @@ class RosOdometry2VehicleOdometry(Node):
             10
         )
 
-        # Publisher (PX4 requires Best Effort QoS)
+        # Publisher 
         qos_profile = rclpy.qos.QoSProfile(
             reliability=rclpy.qos.QoSReliabilityPolicy.BEST_EFFORT,
             durability=rclpy.qos.QoSDurabilityPolicy.VOLATILE,
@@ -52,10 +52,7 @@ class RosOdometry2VehicleOdometry(Node):
 
         self.get_logger().info("ROS Odometry → PX4 VehicleOdometry node started")
 
-    # ===============================
-    # ENU → NED conversion helpers
-    # ===============================
-
+    
     def enu_to_ned_position(self, p):
         return np.array([p[0], -p[1], -p[2]])
 
@@ -67,10 +64,7 @@ class RosOdometry2VehicleOdometry(Node):
     def enu_to_ned_vector(self, v):
         return np.array([v[0], -v[1], -v[2]])
 
-    # ===============================
-    # Callback
-    # ===============================
-
+   
     def odom_callback(self, msg: Odometry):
 
         try:

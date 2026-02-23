@@ -25,6 +25,9 @@ find_package(px4_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 #################
 # Setup targets #
@@ -66,7 +69,13 @@ add_executable(offboard_control_srv src/examples/offboard/offboard_control_srv.c
 ament_target_dependencies(offboard_control_srv rclcpp px4_msgs)
 install(TARGETS offboard_control_srv DESTINATION lib/${PROJECT_NAME})
 
-
+add_executable(ros_odometry_to_vehicle_odometry src/examples/odometry/ros_odometry_to_vehicle_odometry.cpp)
+ament_target_dependencies(ros_odometry_to_vehicle_odometry rclcpp px4_msgs geometry_msgs sensor_msgs tf2_ros tf2_eigen nav_msgs)
+target_link_libraries(
+  ros_odometry_to_vehicle_odometry
+  frame_transforms
+)
+install(TARGETS ros_odometry_to_vehicle_odometry DESTINATION lib/${PROJECT_NAME})
 ############
 # Install ##
 ############
