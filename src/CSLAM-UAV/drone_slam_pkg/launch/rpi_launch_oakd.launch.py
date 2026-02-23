@@ -116,18 +116,18 @@ def generate_launch_description():
             ],
             arguments=['-d'], 
         ),
-        Node(
-            package='rtabmap_viz',
-            executable='rtabmap_viz',
-            name='rtabmap_viz',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[vslam_params],
-            remappings=[
-                ("imu", "/imu/data_converted"),
-                ('odom', '/odom'),
-            ],
-        ),
+        # Node(
+        #     package='rtabmap_viz',
+        #     executable='rtabmap_viz',
+        #     name='rtabmap_viz',
+        #     namespace='rtabmap',
+        #     output='screen',
+        #     parameters=[vslam_params],
+        #     remappings=[
+        #         ("imu", "/imu/data_converted"),
+        #         ('odom', '/odom'),
+        #     ],
+        # ),
 
         Node(
             package='drone_slam_pkg', 
@@ -137,14 +137,14 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True}]
         ),
 
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            output='screen',
-            arguments=['-d', os.path.join(
-                get_package_share_directory('rtabmap_rviz_plugins'),
-                'launch', 'rtabmap.rviz'
-            )],
-            parameters=[{'use_sim_time': True}]
-        ),
+        # Node(
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     output='screen',
+        #     arguments=['-d', os.path.join(
+        #         get_package_share_directory('rtabmap_rviz_plugins'),
+        #         'launch', 'rtabmap.rviz'
+        #     )],
+        #     parameters=[{'use_sim_time': True}]
+        # ),
     ])
