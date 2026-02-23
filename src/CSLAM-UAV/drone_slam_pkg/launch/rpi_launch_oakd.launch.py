@@ -53,13 +53,13 @@ def generate_launch_description():
         ),
 
         
-        Node(
-            package='depthai_ros_driver',
-            executable='camera_node',
-            name='oak_camera',
-            output='screen',
-            parameters=[os.path.expanduser('~/oak_run.yaml')],
-        ),
+        # Node(
+        #     package='depthai_ros_driver',
+        #     executable='camera_node',
+        #     name='oak_camera',
+        #     output='screen',
+        #     parameters=[os.path.expanduser('~/oak_run.yaml')],
+        # ),
         #oak_rgb_camera_optical_frame
 
         Node(
@@ -121,7 +121,7 @@ def generate_launch_description():
         #     executable='rtabmap_viz',
         #     name='rtabmap_viz',
         #     namespace='rtabmap',
-        #     output='screen',
+        #     output='screen', 
         #     parameters=[vslam_params],
         #     remappings=[
         #         ("imu", "/imu/data_converted"),
