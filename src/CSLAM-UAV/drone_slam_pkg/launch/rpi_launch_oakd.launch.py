@@ -40,10 +40,10 @@ def generate_launch_description():
     return LaunchDescription([
         
         
-        ExecuteProcess(
-            cmd=['MicroXRCEAgent', 'udp4', '--port', '8888'],
-            output='screen'
-        ),
+        # ExecuteProcess(
+        #     cmd=['MicroXRCEAgent', 'udp4', '--port', '8888'],
+        #     output='screen'
+        # ),
 
         Node(
             package='drone_slam_pkg', 
@@ -53,13 +53,13 @@ def generate_launch_description():
         ),
 
         
-        Node(
-            package='depthai_ros_driver',
-            executable='camera_node',
-            name='oak_camera',
-            output='screen',
-            parameters=[os.path.expanduser('~/oak_run.yaml')],
-        ),
+        # Node(
+        #     package='depthai_ros_driver',
+        #     executable='camera_node',
+        #     name='oak_camera',
+        #     output='screen',
+        #     parameters=[os.path.expanduser('~/oak_run.yaml')],
+        # ),
         #oak_rgb_camera_optical_frame
 
         Node(
