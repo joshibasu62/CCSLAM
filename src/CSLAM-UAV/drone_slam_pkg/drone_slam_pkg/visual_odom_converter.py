@@ -24,7 +24,8 @@ class RosOdometry2VehicleOdometry(Node):
         self.repeat_odom = self.get_parameter("repeat_odom").value
 
         # TF buffer
-        self.tf_buffer = tf2_ros.Buffer(self.get_clock())
+        cache_time = Duration(seconds=10.0)  # 10 seconds cache
+        self.tf_buffer = tf2_ros.Buffer(cache_time=cache_time)
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
         # Subscriber
