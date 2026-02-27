@@ -217,9 +217,9 @@ def generate_launch_description():
                 ),
                 
                 Node(
-                    package='drone_slam_pkg', 
-                    executable='visual_odom_converter', 
-                    name='visual_odom_converter',
+                    package='px4_ros_com', 
+                    executable='ros_odometry_to_vehicle_odometry', 
+                    name='ros_odometry_to_vehicle_odometry',
                     output='screen',
                     parameters=[{'use_sim_time': True}]
                 ),
