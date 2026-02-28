@@ -71,6 +71,10 @@ def generate_launch_description():
         'wait_imu_to_init': True,
         'publish_tf': True,
 
+        'Grid/MapFrameProjection': 'true',
+        'NormalsSegmentation': 'false',
+        'Grid/MaxGroundHeight': '1.15', 
+        'Grid/MaxObstacleHeight': '1.75',
         # 'Grid/3D': True,
         # 'Grid/RayTracing': True,
         # 'Grid/MaxGroundHeight': '0.1', 

@@ -36,6 +36,7 @@ setup(
                 'processes = px4_offboard.processes:main',
                 'offboard_position_control = px4_offboard.offboard_position_control:main',
                 'position_control_node = px4_offboard.position_control_node:main',
+                'second_drone_position_control = px4_offboard.second_drone_position_control:main',
         ],
     },
 )

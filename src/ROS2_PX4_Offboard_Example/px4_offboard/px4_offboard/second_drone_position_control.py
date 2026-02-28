@@ -26,7 +26,7 @@ import time
 class PositionControl(Node):
 
     def __init__(self):
-        super().__init__('position_control_node')
+        super().__init__('second_drone_position_control')
         
         # QoS Profile
         qos_profile = QoSProfile(
@@ -39,36 +39,36 @@ class PositionControl(Node):
         # Subscriptions
         self.status_sub = self.create_subscription(
             VehicleStatus,
-            '/fmu/out/vehicle_status',
+            'px4_1/fmu/out/vehicle_status',
             self.vehicle_status_callback,
             qos_profile)
         
         self.local_position_sub = self.create_subscription(
             VehicleLocalPosition,
-            '/fmu/out/vehicle_local_position',
+            'px4_1/fmu/out/vehicle_local_position',
             self.local_position_callback,
             qos_profile)
         
         self.arm_trigger_sub = self.create_subscription(
             Bool,
-            '/arm_trigger',
+            'px4_1/arm_trigger',
             self.arm_trigger_callback,
             10)
 
         # Publishers
         self.publisher_offboard_mode = self.create_publisher(
             OffboardControlMode, 
-            '/fmu/in/offboard_control_mode', 
+            'px4_1/fmu/in/offboard_control_mode', 
             qos_profile)
         
         self.publisher_trajectory = self.create_publisher(
             TrajectorySetpoint, 
-            '/fmu/in/trajectory_setpoint', 
+            'px4_1/fmu/in/trajectory_setpoint', 
             qos_profile)
         
         self.vehicle_command_publisher = self.create_publisher(
             VehicleCommand, 
-            "/fmu/in/vehicle_command", 
+            "px4_1/fmu/in/vehicle_command", 
             10)
 
         # State machine variables
@@ -135,6 +135,7 @@ class PositionControl(Node):
         self.vehicle_command_publisher.publish(cmd_msg)
 
         self.get_logger().info(f"Set param {param_name} = {value}")
+
 
     def arm_trigger_callback(self, msg):
         """Callback for arm trigger"""
@@ -283,11 +284,11 @@ class PositionControl(Node):
         cmd_msg.source_system = 1
         cmd_msg.source_component = 1
         cmd_msg.from_external = True
-        self.set_parameter("MPC_XY_VEL_MAX", 0.7)
-        self.set_parameter("MPC_Z_VEL_MAX_UP", 0.7)
-        self.set_parameter("MPC_Z_VEL_MAX_DN", 0.7)
         cmd_msg.timestamp = int(Clock().now().nanoseconds / 1000)
         self.vehicle_command_publisher.publish(cmd_msg)
+        self.set_parameter("MPC_XY_VEL_MAX", 1.0)
+        self.set_parameter("MPC_Z_VEL_MAX_UP", 1.0)
+        self.set_parameter("MPC_Z_VEL_MAX_DN", 0.7)
         self.get_logger().info("Arm command sent")
 
     def land_vehicle(self):

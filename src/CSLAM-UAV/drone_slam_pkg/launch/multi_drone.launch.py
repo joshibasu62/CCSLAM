@@ -33,8 +33,11 @@ def generate_launch_description():
 
             # 'Grid/3D': True,
             # 'Grid/RayTracing': True,
-            # 'Grid/MaxGroundHeight': '0.1', 
-            # 'Grid/MaxObstacleHeight': '2.0',
+            'Grid/MinGroundHeight': '0.1',
+            'Grid/MapFrameProjection': 'true',
+            'NormalsSegmentation': 'false',
+            'Grid/MaxGroundHeight': '1.15', 
+            'Grid/MaxObstacleHeight': '1.75',
             # 'Grid/NoiseFilteringRadius': '0.05',
             # 'Grid/NoiseFilteringMinNeighbors': '2',
             
