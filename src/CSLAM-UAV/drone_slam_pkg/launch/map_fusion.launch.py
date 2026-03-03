@@ -8,7 +8,7 @@ import os
 def generate_launch_description():
     px4_dir = os.path.join(os.getenv("HOME"), "PX4-Autopilot")
     urdf_file = "/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/two_drones.urdf"
-
+    rviz_dir = os.path.join(get_package_share_directory("drone_slam_pkg"),"rviz")
     def get_vslam_params(drone_ns, db_name):
         return {
             'use_sim_time': True,
@@ -24,7 +24,7 @@ def generate_launch_description():
             'sync_queue_size': 100,
             
             'Odom/ResetCountdown': '1',     
-            'Vis/MinInliers': '10',         
+            'Vis/MinInliers': '15',         
             'Odom/Strategy': '0',           
             'wait_for_transform': 0.2,
             'Optimizer/GravitySigma': '0.3',
@@ -33,8 +33,11 @@ def generate_launch_description():
 
             # 'Grid/3D': True,
             # 'Grid/RayTracing': True,
-            # 'Grid/MaxGroundHeight': '0.1', 
-            # 'Grid/MaxObstacleHeight': '2.0',
+            'Grid/MinGroundHeight': '0.1',
+            'Grid/MapFrameProjection': 'true',
+            'NormalsSegmentation': 'false',
+            'Grid/MaxGroundHeight': '1.15', 
+            'Grid/MaxObstacleHeight': '1.75',
             # 'Grid/NoiseFilteringRadius': '0.05',
             # 'Grid/NoiseFilteringMinNeighbors': '2',
             
@@ -92,18 +95,18 @@ def generate_launch_description():
                 #     ],
                 # ),
 
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "0", "0", "0", "0", "1.5708", "world", "x500_drone_0/map"],
-                    output="screen",
-                ),
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "-0.8", "0", "0", "0", "1.5708", "world", "x500_drone_1/map"],
-                    output="screen",
-                ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
+                #     output="screen",
+                # ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                #     output="screen",
+                # ),
 
                 Node(
                     package="ros_gz_bridge",
@@ -146,7 +149,7 @@ def generate_launch_description():
                      arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_0/base_link', 'x500_depth_0/base_link/imu_sensor']),
              
                 Node(package='tf2_ros', executable='static_transform_publisher',
-                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_0/base_link', 'x500_drone_0/camera_link']),
+                     arguments=['0.12', '0.03', '0.242', '-1.570796327', '0', '-1.570796327', 'x500_drone_0/base_link', 'x500_drone_0/camera_link']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_0/camera_link', 'x500_depth_0/camera_link/IMX214']),
@@ -160,7 +163,7 @@ def generate_launch_description():
                      arguments=['0', '0', '0', '0', '0', '0', 'x500_drone_1/base_link', 'x500_depth_1/base_link/imu_sensor']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
-                     arguments=['0.12', '0.03', '0.242', '0', '0', '0', 'x500_drone_1/base_link', 'x500_drone_1/camera_link']),
+                     arguments=['0.12', '0.03', '0.242', '-1.570796327', '0', '-1.570796327', 'x500_drone_1/base_link', 'x500_drone_1/camera_link']),
                 
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0.0123', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_1/camera_link', 'x500_depth_1/camera_link/IMX214']),
@@ -281,22 +284,6 @@ def generate_launch_description():
                     ],
                 ),
 
-                #map fusion
-                # Node(
-                #     package='drone_slam_pkg', # REPLACE with your actual package name if the script is inside it
-                #     executable='cloud_merger', # OR use 'execute_process' below if not installed
-                #     name='map_merger',
-                #     output='screen',
-                #     parameters=[{
-                #         'drone_0_topic': '/x500_drone_0/cloud_map',
-                #         'drone_1_topic': '/x500_drone_1/cloud_map',
-                #         'output_topic': '/comboMapData',
-                #         'target_frame': 'world',
-                #         'use_sim_time': True
-                #     }]
-                # ),
-
-
                 Node(
                     package="rviz2",
                     executable="rviz2",
@@ -308,6 +295,54 @@ def generate_launch_description():
                     )],
                     parameters=[{"use_sim_time": True}],
                 ),
+
+                #nodes for offboard control drones
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='control',
+                    name='control',
+                    prefix='gnome-terminal --',
+                ),
+
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='velocity_control',
+                    name='velocity'
+                ),
+
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='control1',
+                    name='control1',
+                    prefix='gnome-terminal --',
+                ),
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='velocity_control1',
+                    name='velocity1'
+                ),
+
+                # Node(
+                #     package="rviz2",
+                #     executable="rviz2",
+                #     name="rviz_drone_0",
+                #     output="screen",
+                #     arguments=["-d", os.path.join(rviz_dir, "drone_0.rviz")],
+                #     parameters=[{"use_sim_time": True}],
+                # ),
+
+                # Node(
+                #     package="rviz2",
+                #     executable="rviz2",
+                #     name="rviz_drone_1",
+                #     output="screen",
+                #     arguments=["-d", os.path.join(rviz_dir, "drone_1.rviz")],
+                #     parameters=[{"use_sim_time": True}],
+                # ),
             ],
         ),
     ])

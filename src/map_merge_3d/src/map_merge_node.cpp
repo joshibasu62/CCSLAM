@@ -35,8 +35,7 @@ MapMerge3d::MapMerge3d()
   world_frame_ = this->get_parameter("world_frame").as_string();
   publish_tf_ = this->get_parameter("publish_tf").as_bool();
 
-  // FIX 2: passing 'this' (raw pointer) instead of shared_from_this()
-  // You must update map_merging.h/.cpp as shown below for this to work
+  // passing 'this' (raw pointer) instead of shared_from_this()
   map_merge_params_ = MapMergingParams::fromROSNode(this);
 
   merged_map_publisher_ = this->create_publisher<sensor_msgs::msg::PointCloud2>(merged_map_topic, 1);
