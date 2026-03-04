@@ -33,15 +33,16 @@ def generate_launch_description():
 
             # 'Grid/3D': True,
             # 'Grid/RayTracing': True,
-            'Grid/MinGroundHeight': '0.1',
+            'Grid/MinGroundHeight': '-0.1',
             'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'false',
-            'Grid/MaxGroundHeight': '1.15', 
+            'Grid/MaxGroundHeight': '0.1', 
             'Grid/MaxObstacleHeight': '1.75',
-            # 'Grid/NoiseFilteringRadius': '0.05',
-            # 'Grid/NoiseFilteringMinNeighbors': '2',
+            'Grid/NoiseFilteringRadius': '0.1',
+            'Grid/NoiseFilteringMinNeighbors': '5',
             
-            'database_path': f'~/.ros/{db_name}.db'
+            
+            # 'database_path': f'~/.ros/{db_name}.db'
         }
 
     return LaunchDescription([
@@ -288,11 +289,7 @@ def generate_launch_description():
                     package="rviz2",
                     executable="rviz2",
                     output="screen",
-                    arguments=["-d", os.path.join(
-                        get_package_share_directory("rtabmap_rviz_plugins"),
-                        "launch",
-                        "rtabmap.rviz"
-                    )],
+                    arguments=["-d", '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
                     parameters=[{"use_sim_time": True}],
                 ),
 

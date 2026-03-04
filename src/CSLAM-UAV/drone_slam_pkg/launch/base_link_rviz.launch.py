@@ -15,41 +15,7 @@ def generate_launch_description():
     px4_dir = os.path.join(os.getenv('HOME'), 'PX4-Autopilot')
     urdf_file = '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/base_link.urdf'
 
-    # vslam_params = {
-    #     'use_sim_time': True,
-    #     'frame_id': 'base_link',
-    #     'map_frame_id': 'map',
-    #     'odom_frame_id': 'odom',
-
-    #     # Sensor subscriptions
-    #     'subscribe_rgbd': True,
-    #     'subscribe_depth': False,     
-    #     'subscribe_imu': True,
-
-    #     # Sync/queues
-    #     'approx_sync': False,          # IMPORTANT: sync is done by rgbd_sync
-    #     'queue_size': 200,
-    #     'sync_queue_size': 100,
-
-        
-    #     'Odom/ResetCountdown': '1',     # <--- CRITICAL: If lost, reset immediately
-    #     'Vis/MinInliers': '20',         # <--- CRITICAL: Track with fewer points
-    #     'Odom/Strategy': '0',           # 0=Frame-to-Frame (Faster for drones)
-    #     'wait_for_transform': 0.2,
-    #     'Optimizer/GravitySigma': '0.3',
-
-    #     'wait_imu_to_init': True,
-    #     'publish_tf': True,
-
-
-    #     #for 2d maps
-    #     # 'Grid/3D': True,
-    #     # 'Grid/RayTracing': True,
-    #     # 'Grid/MaxGroundHeight': '0.1', 
-    #     # 'Grid/MaxObstacleHeight': '2.0',
-    #     # 'Grid/NoiseFilteringRadius': '0.05',
-    #     # 'Grid/NoiseFilteringMinNeighbors': '2',
-    # }
+    
     vslam_params = {
         'use_sim_time': True,
         'frame_id': 'base_link',
@@ -71,16 +37,15 @@ def generate_launch_description():
         'wait_imu_to_init': True,
         'publish_tf': True,
 
-        'Grid/MapFrameProjection': 'true',
-        'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '1.15', 
-        'Grid/MaxObstacleHeight': '1.75',
         # 'Grid/3D': True,
         # 'Grid/RayTracing': True,
-        # 'Grid/MaxGroundHeight': '0.1', 
-        # 'Grid/MaxObstacleHeight': '2.0',
-        # 'Grid/NoiseFilteringRadius': '0.05',
-        # 'Grid/NoiseFilteringMinNeighbors': '2',
+        'Grid/MinGroundHeight': '-0.1',
+        'Grid/MapFrameProjection': 'true',
+        'NormalsSegmentation': 'false',
+        'Grid/MaxGroundHeight': '0.1', 
+        'Grid/MaxObstacleHeight': '1.75',
+        'Grid/NoiseFilteringRadius': '0.1',
+        'Grid/NoiseFilteringMinNeighbors': '5',
         
         # 'database_path': f'~/.ros/{db_name}.db'
     }
@@ -220,23 +185,35 @@ def generate_launch_description():
                     ],
                 ),
                 
-                Node(
-                    package='px4_ros_com', 
-                    executable='ros_odometry_to_vehicle_odometry', 
-                    name='ros_odometry_to_vehicle_odometry',
-                    output='screen',
-                    parameters=[{'use_sim_time': True}]
-                ),
+                # Node(
+                #     package='px4_ros_com', 
+                #     executable='ros_odometry_to_vehicle_odometry', 
+                #     name='ros_odometry_to_vehicle_odometry',
+                #     output='screen',
+                #     parameters=[{'use_sim_time': True}]
+                # ),
 
                 Node(
                     package='rviz2',
                     executable='rviz2',
                     output='screen',
-                    arguments=['-d', os.path.join(
-                        get_package_share_directory('rtabmap_rviz_plugins'),
-                        'launch', 'rtabmap.rviz'
-                    )],
+                    arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
                     parameters=[{'use_sim_time': True}]
+                ),
+
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='control',
+                    name='control',
+                    prefix='gnome-terminal --',
+                ),
+
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='velocity_control',
+                    name='velocity'
                 ),
 
                 
