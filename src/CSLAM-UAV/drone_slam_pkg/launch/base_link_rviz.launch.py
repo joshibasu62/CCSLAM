@@ -181,17 +181,17 @@ def generate_launch_description():
                     parameters=[vslam_params],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
-                        ('odom', '/odom'),
+                        ('odom', 'rtabmap/odom'),
                     ],
                 ),
                 
-                # Node(
-                #     package='px4_ros_com', 
-                #     executable='ros_odometry_to_vehicle_odometry', 
-                #     name='ros_odometry_to_vehicle_odometry',
-                #     output='screen',
-                #     parameters=[{'use_sim_time': True}]
-                # ),
+                Node(
+                    package='px4_ros_com', 
+                    executable='ros_odometry_to_vehicle_odometry', 
+                    name='ros_odometry_to_vehicle_odometry',
+                    output='screen',
+                    parameters=[{'use_sim_time': True}]
+                ),
 
                 Node(
                     package='rviz2',
