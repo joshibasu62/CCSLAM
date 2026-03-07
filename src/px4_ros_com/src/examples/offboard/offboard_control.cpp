@@ -44,6 +44,7 @@
 #include <px4_msgs/msg/vehicle_control_mode.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <stdint.h>
+#include <cmath>
 
 #include <chrono>
 #include <iostream>
@@ -149,10 +150,32 @@ void OffboardControl::publish_offboard_control_mode()
 void OffboardControl::publish_trajectory_setpoint()
 {
 	TrajectorySetpoint msg{};
-	msg.position = {0.0, 0.0, -1.0};
-	msg.yaw = -3.14; // [-PI:PI]
-	msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
-	trajectory_setpoint_publisher_->publish(msg);
+	// msg.position = {0.0, 0.0, -1.0};
+	// msg.yaw = -3.14; // [-PI:PI]
+	// msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
+	// trajectory_setpoint_publisher_->publish(msg);
+
+	// 1. Get current time in seconds to drive the continuous motion
+    double time_sec = this->get_clock()->now().seconds();
+
+    // 2. Define your circle parameters
+    double radius = 0.2; // 0.5 meters
+    double omega = 0.1;  // Speed of the orbit (radians per second). Tweak this to make it fly faster/slower.
+
+    // 3. Calculate X and Y coordinates
+    float x = radius * std::cos(omega * time_sec);
+    float y = radius * std::sin(omega * time_sec);
+
+    // 4. Send the position command (Z is still -1.0 for a 1-meter hover)
+    msg.position = {0, 0, -1.75};
+
+    // 5. Remove manual yaw control. 
+    // Setting it to NaN (Not a Number) explicitly tells PX4 to ignore yaw.
+    // If you just delete this line, it defaults to 0.0, and the drone will blindly face North the whole time!
+    msg.yaw = std::nanf(""); 
+
+    msg.timestamp = this->get_clock()->now().nanoseconds() / 1000;
+    trajectory_setpoint_publisher_->publish(msg);
 }
 
 /**

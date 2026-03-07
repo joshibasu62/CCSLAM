@@ -204,20 +204,20 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': True}]
                 ),
 
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='control',
-                    name='control',
-                    prefix='gnome-terminal --',
-                ),
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='control',
+                #     name='control',
+                #     prefix='gnome-terminal --',
+                # ),
 
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='velocity_control',
-                    name='velocity'
-                ),
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='velocity_control',
+                #     name='velocity'
+                # ),
 
                 
             ]
