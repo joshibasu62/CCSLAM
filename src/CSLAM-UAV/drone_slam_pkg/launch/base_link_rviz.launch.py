@@ -190,7 +190,10 @@ def generate_launch_description():
                     executable='ros_odometry_to_vehicle_odometry', 
                     name='ros_odometry_to_vehicle_odometry',
                     output='screen',
-                    parameters=[{'use_sim_time': True}]
+                    parameters=[{
+                        'use_sim_time': True,
+                        'repeat_odom': True,
+                                 }]
                 ),
 
                 Node(

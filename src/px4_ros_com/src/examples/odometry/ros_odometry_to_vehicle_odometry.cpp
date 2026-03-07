@@ -36,7 +36,10 @@ public:
 				{
 					std::scoped_lock lock(mutex_); 
 					msg = current_vehicle_odometry_;
-					msg.timestamp = this->get_clock()->now().nanoseconds();
+					// msg.timestamp = this->get_clock()->now().nanoseconds();
+					uint64_t timestamp_usec = this->get_clock()->now().nanoseconds() / 1000;
+                    msg.timestamp = timestamp_usec;
+                    msg.timestamp_sample = timestamp_usec;
 				}
 				
 				vehicle_odometry_publisher_->publish(msg);
@@ -90,14 +93,14 @@ public:
 			msg.position[1] = positionNED.y();
 			msg.position[2] = positionNED.z();
 			// Position Variance (Inject 0.01 if zero)
-            msg.position_variance[0] = (covNED[0] < 0.001) ? 0.5 : covNED[0];
-            msg.position_variance[1] = (covNED[7] < 0.001) ? 0.5 : covNED[7];
-            msg.position_variance[2] = (covNED[14] < 0.001) ? 0.5 : covNED[14];
+            msg.position_variance[0] = (covNED[0] < 0.001) ? 0.05 : covNED[0];
+            msg.position_variance[1] = (covNED[7] < 0.001) ? 0.05 : covNED[7];
+            msg.position_variance[2] = (covNED[14] < 0.001) ? 0.05 : covNED[14];
 
             // Orientation Variance (Inject 0.05 if zero)
-            msg.orientation_variance[0] = (covNED[21] < 0.001) ? 0.5 : covNED[21];
-            msg.orientation_variance[1] = (covNED[28] < 0.001) ? 0.5 : covNED[28];
-            msg.orientation_variance[2] = (covNED[35] < 0.001) ? 0.5 : covNED[35];
+            msg.orientation_variance[0] = (covNED[21] < 0.001) ? 0.05 : covNED[21];
+            msg.orientation_variance[1] = (covNED[28] < 0.001) ? 0.05 : covNED[28];
+            msg.orientation_variance[2] = (covNED[35] < 0.001) ? 0.05 : covNED[35];
 
 			// Twist is published in base frame, just convert to NED
 			msg.velocity_frame = px4_msgs::msg::VehicleOdometry::VELOCITY_FRAME_BODY_FRD;
@@ -114,9 +117,9 @@ public:
 			msg.angular_velocity[2] = angularFRD.z();
 			px4_ros_com::frame_transforms::Covariance6d velocityCovNED = px4_ros_com::frame_transforms::transform_static_frame(odometry->twist.covariance, px4_ros_com::frame_transforms::StaticTF::ENU_TO_NED);
 			// Velocity Variance (Inject 0.01 if zero)
-            msg.velocity_variance[0] = (velocityCovNED[0] < 0.001) ? 0.5 : velocityCovNED[0];
-            msg.velocity_variance[1] = (velocityCovNED[7] < 0.001) ? 0.5 : velocityCovNED[7];
-            msg.velocity_variance[2] = (velocityCovNED[14] < 0.001) ? 0.5 : velocityCovNED[14];
+            msg.velocity_variance[0] = (velocityCovNED[0] < 0.001) ? 0.05 : velocityCovNED[0];
+            msg.velocity_variance[1] = (velocityCovNED[7] < 0.001) ? 0.05 : velocityCovNED[7];
+            msg.velocity_variance[2] = (velocityCovNED[14] < 0.001) ? 0.05 : velocityCovNED[14];
 
 			if(repeat_odom_)
 			{
