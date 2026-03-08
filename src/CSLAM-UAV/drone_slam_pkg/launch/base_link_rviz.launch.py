@@ -24,6 +24,7 @@ def generate_launch_description():
         
         'subscribe_rgbd': True,
         'subscribe_depth': False,
+        'subscribe_odom': True,
         'subscribe_imu': True,
         'approx_sync': False, # Sync done in rgbd_sync
         'queue_size': 200,
@@ -166,7 +167,7 @@ def generate_launch_description():
                     parameters=[vslam_params],
                     remappings=[
                         ("imu", "/x500_drone_0/imu/data"),
-                        ('odom', '/odom'),
+                        ('odom', 'rtabmap/odom'),
                     ],
                     arguments=['-d'],   # delete previous ~/.ros/rtabmap.db (same behavior as many examples)
                 ),
@@ -185,14 +186,25 @@ def generate_launch_description():
                     ],
                 ),
                 
+                # Node(
+                #     package='px4_ros_com', 
+                #     executable='ros_odometry_to_vehicle_odometry', 
+                #     name='ros_odometry_to_vehicle_odometry',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': True,
+                #         # 'repeat_odom': True,
+                #                  }]
+                # ),
+
                 Node(
                     package='px4_ros_com', 
-                    executable='ros_odometry_to_vehicle_odometry', 
-                    name='ros_odometry_to_vehicle_odometry',
+                    executable='ros_odometry_to_vehicle_odometry_wo_map', 
+                    name='ros_odometry_to_vehicle_odometry_wo_map',
                     output='screen',
                     parameters=[{
                         'use_sim_time': True,
-                        'repeat_odom': True,
+                        # 'repeat_odom': True,
                                  }]
                 ),
 

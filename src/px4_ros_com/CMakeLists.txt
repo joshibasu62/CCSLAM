@@ -76,6 +76,15 @@ target_link_libraries(
   frame_transforms
 )
 install(TARGETS ros_odometry_to_vehicle_odometry DESTINATION lib/${PROJECT_NAME})
+
+
+add_executable(ros_odometry_to_vehicle_odometry_wo_map src/examples/odometry/ros_odometry_to_vehicle_odometry_wo_map.cpp)
+ament_target_dependencies(ros_odometry_to_vehicle_odometry_wo_map rclcpp px4_msgs geometry_msgs sensor_msgs tf2_ros tf2_eigen nav_msgs)
+target_link_libraries(
+  ros_odometry_to_vehicle_odometry_wo_map
+  frame_transforms
+)
+install(TARGETS ros_odometry_to_vehicle_odometry_wo_map DESTINATION lib/${PROJECT_NAME})
 ############
 # Install ##
 ############

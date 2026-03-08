@@ -167,7 +167,8 @@ void OffboardControl::publish_trajectory_setpoint()
     float y = radius * std::sin(omega * time_sec);
 
     // 4. Send the position command (Z is still -1.0 for a 1-meter hover)
-    msg.position = {0, 0, -1.75};
+    msg.position = {x, y, -1.5};
+	// msg.yaw = 0.0; // [-PI:PI]
 
     // 5. Remove manual yaw control. 
     // Setting it to NaN (Not a Number) explicitly tells PX4 to ignore yaw.
