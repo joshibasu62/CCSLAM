@@ -171,6 +171,7 @@ def generate_launch_description():
                      arguments=['0.01233', '-0.03', '0.01878', '0', '0', '0', 'x500_drone_1/camera_link', 'x500_drone_1/camera_link/StereoOV7251']),
 
                 #Drone 0
+                
                 Node(
                     package="rtabmap_sync",
                     executable="rgbd_sync",

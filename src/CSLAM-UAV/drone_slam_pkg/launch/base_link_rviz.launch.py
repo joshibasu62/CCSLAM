@@ -1,7 +1,3 @@
-
-
-
-
 # !/usr/bin/env python3
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, ExecuteProcess
@@ -15,18 +11,18 @@ def generate_launch_description():
     px4_dir = os.path.join(os.getenv('HOME'), 'PX4-Autopilot')
     urdf_file = '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/base_link.urdf'
 
-    
     vslam_params = {
         'use_sim_time': True,
         'frame_id': 'base_link',
         'map_frame_id': 'map',
         'odom_frame_id': 'odom',
+        'guess_frame_id': 'base_link_stabilized',
         
         'subscribe_rgbd': True,
         'subscribe_depth': False,
         'subscribe_odom': True,
         'subscribe_imu': True,
-        'approx_sync': False, # Sync done in rgbd_sync
+        'approx_sync': False,
         'queue_size': 200,
         'sync_queue_size': 100,
         
@@ -34,12 +30,12 @@ def generate_launch_description():
         'Vis/MinInliers': '15',         
         'Odom/Strategy': '0',           
         'wait_for_transform': 0.2,
-        'Optimizer/GravitySigma': '0.3',
+        'Optimizer/GravitySigma': '0.1',
         'wait_imu_to_init': True,
         'publish_tf': True,
+        # 'Vis/FeatureType': '10',
+        # 'Kp/DetectorStrategy': '10',
 
-        # 'Grid/3D': True,
-        # 'Grid/RayTracing': True,
         'Grid/MinGroundHeight': '-0.1',
         'Grid/MapFrameProjection': 'true',
         'NormalsSegmentation': 'false',
@@ -47,9 +43,6 @@ def generate_launch_description():
         'Grid/MaxObstacleHeight': '1.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
-        # 'RGBD/StartAtOrigin': 'true',
-        
-        # 'database_path': f'~/.ros/{db_name}.db'
     }
 
     return LaunchDescription([
@@ -80,27 +73,14 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{'use_sim_time': True}],
                     arguments=[
-                        # Simulation clock
                         "/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock",
-
-                        # RGB camera
                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image@sensor_msgs/msg/Image[gz.msgs.Image",
-
-                        # Camera info
                         "/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
-
-                        # Depth camera raw image
                         "/depth_camera@sensor_msgs/msg/Image[gz.msgs.Image",
-
-                        # Depth camera as PointCloud2
                         "/depth_camera/points@sensor_msgs/msg/PointCloud2[gz.msgs.PointCloudPacked",
-
-                        # IMU
                         "/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU",
                     ],
                     remappings=[
-                        # Drone 0
-                    
                         ("/world/default/model/x500_depth_0/link/base_link/sensor/imu_sensor/imu", "/x500_drone_0/imu/data"),
                     ],
                 ),
@@ -111,19 +91,38 @@ def generate_launch_description():
                     name='robot_state_publisher',
                     output='screen',
                     parameters=[{'robot_description': open(urdf_file).read()},
-                                {'use_sim_time': True}
-                                ]
+                                {'use_sim_time': True}]
                 ),
-                
 
+                Node(
+                    package='imu_filter_madgwick',
+                    executable='imu_filter_madgwick_node',
+                    output='screen',
+                    parameters=[{
+                        'use_mag': False,
+                        'world_frame': 'enu',
+                        'publish_tf': False,
+                        'use_sim_time': True,
+                    }],
+                    remappings=[
+                        ('imu/data_raw', '/x500_drone_0/imu/data'),
+                        # Output: /imu/data (filtered with orientation)
+                    ],
+                ),
 
-                # Node(
-                #     package='drone_slam_pkg',
-                #     executable='odom_drone_tf_single',
-                #     name='odom_drone_tf_single',
-                #     output='screen',
-                #     parameters=[{'use_sim_time': True}]
-                # ),
+                Node(
+                    package='rtabmap_util',
+                    executable='imu_to_tf',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': True,
+                        'fixed_frame_id': 'base_link_stabilized',
+                        'base_frame_id': 'base_link',
+                    }],
+                    remappings=[
+                        ('imu/data', '/imu/data'),
+                    ],
+                ),
 
                 Node(
                     package='rtabmap_sync',
@@ -142,7 +141,6 @@ def generate_launch_description():
                         ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
                         ('rgb/camera_info', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/camera_info'),
                         ('depth/image', '/depth_camera'),
-
                     ],
                 ),
 
@@ -154,8 +152,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        ("imu", "/x500_drone_0/imu/data"),
-                        
+                        ("imu", "/imu/data"),  
                     ],
                 ),
   
@@ -167,13 +164,12 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        ("imu", "/x500_drone_0/imu/data"),
+                        ("imu", "/imu/data"),  
                         ('odom', 'rtabmap/odom'),
                     ],
-                    arguments=['-d'],   # delete previous ~/.ros/rtabmap.db (same behavior as many examples)
+                    arguments=['-d'],
                 ),
 
-               
                 Node(
                     package='rtabmap_viz',
                     executable='rtabmap_viz',
@@ -182,11 +178,12 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params],
                     remappings=[
-                        ("imu", "/x500_drone_0/imu/data"),
+                        ("imu", "/imu/data"),  
                         ('odom', 'rtabmap/odom'),
                     ],
                 ),
                 
+                # ===== SEND ODOMETRY TO PX4 =====
                 # Node(
                 #     package='px4_ros_com', 
                 #     executable='ros_odometry_to_vehicle_odometry', 
@@ -194,20 +191,26 @@ def generate_launch_description():
                 #     output='screen',
                 #     parameters=[{
                 #         'use_sim_time': True,
-                #         # 'repeat_odom': True,
-                #                  }]
+                #         'repeat_odom': True,
+                #     }],
+                #     remappings=[
+                #         ('odom', '/rtabmap/odom'), 
+                #     ],
                 # ),
 
-                # Node(
-                #     package='px4_ros_com', 
-                #     executable='ros_odometry_to_vehicle_odometry_wo_map', 
-                #     name='ros_odometry_to_vehicle_odometry_wo_map',
-                #     output='screen',
-                #     parameters=[{
-                #         'use_sim_time': True,
-                #         # 'repeat_odom': True,
-                #                  }]
-                # ),
+                Node(
+                    package='px4_ros_com', 
+                    executable='ros_odometry_to_vehicle_odometry_wo_map', 
+                    name='ros_odometry_to_vehicle_odometry_wo_map',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': True,
+                        'repeat_odom': True,
+                    }],
+                    remappings=[
+                        ('odom', '/rtabmap/odom'), 
+                    ],
+                ),
 
                 Node(
                     package='rviz2',
@@ -231,9 +234,5 @@ def generate_launch_description():
                     executable='velocity_control',
                     name='velocity'
                 ),
-
-                
             ]
-            )])
-
-
+        )])
