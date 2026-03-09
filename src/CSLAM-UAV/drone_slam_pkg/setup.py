@@ -29,6 +29,9 @@ setup(
         ('share/' + package_name + '/launch',
          glob.glob('launch/*.launch.py')),
          
+        ('share/' + package_name + '/launch',
+         glob.glob('launch/*.py')),
+         
 
         # Models (KEEP STRUCTURE)
         *[

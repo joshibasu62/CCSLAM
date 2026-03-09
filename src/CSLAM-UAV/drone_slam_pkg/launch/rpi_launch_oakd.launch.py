@@ -40,10 +40,10 @@ def generate_launch_description():
     return LaunchDescription([
         
         
-        # ExecuteProcess(
-        #     cmd=['MicroXRCEAgent', 'udp4', '--port', '8888'],
-        #     output='screen'
-        # ),
+        ExecuteProcess(
+            cmd=['MicroXRCEAgent', 'udp4', '--port', '8888'],
+            output='screen'
+        ),
 
         Node(
             package='drone_slam_pkg', 
@@ -99,7 +99,7 @@ def generate_launch_description():
             parameters=[vslam_params],
             remappings=[
                 ("imu", "/imu/data_converted"), 
-                ('odom', '/odom')
+                ('odom', '/rtabmap/odom')
             ],
         ),
 
@@ -113,39 +113,40 @@ def generate_launch_description():
             parameters=[vslam_params],
             remappings=[
                 ("imu", "/imu/data_converted"),
-                ('odom', '/odom'), 
+                ('odom', '/rtabmap/odom'), 
             ],
             arguments=['-d'], 
         ),
-        # Node(
-        #     package='rtabmap_viz',
-        #     executable='rtabmap_viz',
-        #     name='rtabmap_viz',
-        #     namespace='rtabmap',
-        #     output='screen', 
-        #     parameters=[vslam_params],
-        #     remappings=[
-        #         ("imu", "/imu/data_converted"),
-        #         ('odom', '/odom'),
-        #     ],
-        # ),
+
+        Node(
+            package='rtabmap_viz',
+            executable='rtabmap_viz',
+            name='rtabmap_viz',
+            namespace='rtabmap',
+            output='screen', 
+            parameters=[vslam_params],
+            remappings=[
+                ("imu", "/imu/data_converted"),
+                ('odom', '/rtabmap/odom'),
+            ],
+        ),
 
         Node(
             package='px4_ros_com', 
-            executable='ros_odometry_to_vehicle_odometry', 
-            name='ros_odom_to_vehicle_odometry',
+            executable='ros_odometry_to_vehicle_odometry_wo_map', 
+            name='ros_odometry_to_vehicle_odometry_wo_map',
             output='screen',
-            parameters=[{'use_sim_time': True}]
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'repeat_odom': True,
+                            }]
         ),
 
-        # Node(
-        #     package='rviz2',
-        #     executable='rviz2',
-        #     output='screen',
-        #     arguments=['-d', os.path.join(
-        #         get_package_share_directory('rtabmap_rviz_plugins'),
-        #         'launch', 'rtabmap.rviz'
-        #     )],
-        #     parameters=[{'use_sim_time': True}]
-        # ),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            output='screen',
+            arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
+            parameters=[{'use_sim_time': use_sim_time}]
+        ),
     ])

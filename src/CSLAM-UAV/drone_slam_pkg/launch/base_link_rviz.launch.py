@@ -43,10 +43,11 @@ def generate_launch_description():
         'Grid/MinGroundHeight': '-0.1',
         'Grid/MapFrameProjection': 'true',
         'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '0.1', 
+        'Grid/MaxGroundHeight': '1.15', 
         'Grid/MaxObstacleHeight': '1.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
+        # 'RGBD/StartAtOrigin': 'true',
         
         # 'database_path': f'~/.ros/{db_name}.db'
     }
@@ -197,16 +198,16 @@ def generate_launch_description():
                 #                  }]
                 # ),
 
-                Node(
-                    package='px4_ros_com', 
-                    executable='ros_odometry_to_vehicle_odometry_wo_map', 
-                    name='ros_odometry_to_vehicle_odometry_wo_map',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': True,
-                        # 'repeat_odom': True,
-                                 }]
-                ),
+                # Node(
+                #     package='px4_ros_com', 
+                #     executable='ros_odometry_to_vehicle_odometry_wo_map', 
+                #     name='ros_odometry_to_vehicle_odometry_wo_map',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': True,
+                #         # 'repeat_odom': True,
+                #                  }]
+                # ),
 
                 Node(
                     package='rviz2',
@@ -216,20 +217,20 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': True}]
                 ),
 
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='control',
-                #     name='control',
-                #     prefix='gnome-terminal --',
-                # ),
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='control',
+                    name='control',
+                    prefix='gnome-terminal --',
+                ),
 
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='velocity_control',
-                #     name='velocity'
-                # ),
+                Node(
+                    package='px4_offboard',
+                    namespace='px4_offboard',
+                    executable='velocity_control',
+                    name='velocity'
+                ),
 
                 
             ]

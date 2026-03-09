@@ -19,21 +19,32 @@ def generate_launch_description():
         'odom_frame_id': 'odom',
         
         'subscribe_rgbd': True,
-        'subscribe_depth': False, 
+        'subscribe_depth': False,
+        'subscribe_odom': True,
         'subscribe_imu': True,
+        'approx_sync': False, # Sync done in rgbd_sync
+        'queue_size': 200,
+        'sync_queue_size': 100,
         
-        'approx_sync': True, 
-        'queue_size': 20,
-        'sync_queue_size': 20,
-        
-        'Odom/Strategy': '0',           
+        'Odom/ResetCountdown': '1',     
         'Vis/MinInliers': '15',         
-        'Vis/MaxFeatures': '500',       
-        'Rtabmap/DetectionRate': '1',   
-        'Odom/ImageDecimation': '2',    
-        
-        'wait_imu_to_init': False,      
+        'Odom/Strategy': '0',           
+        'wait_for_transform': 0.2,
+        'Optimizer/GravitySigma': '0.3',
+        'wait_imu_to_init': True,
         'publish_tf': True,
+
+        # 'Grid/3D': True,
+        # 'Grid/RayTracing': True,
+        'Grid/MinGroundHeight': '-0.1',
+        'Grid/MapFrameProjection': 'true',
+        'NormalsSegmentation': 'false',
+        'Grid/MaxGroundHeight': '0.1', 
+        'Grid/MaxObstacleHeight': '1.75',
+        'Grid/NoiseFilteringRadius': '0.1',
+        'Grid/NoiseFilteringMinNeighbors': '5',
+        
+        # 'database_path': f'~/.ros/{db_name}.db'
     }
 
     return LaunchDescription([
@@ -50,7 +61,6 @@ def generate_launch_description():
             name='px4_imu_converter',
             output='screen'
         ),
-
         
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
@@ -132,13 +142,21 @@ def generate_launch_description():
         ),
 
         Node(
+            package='px4_ros_com', 
+            executable='ros_odometry_to_vehicle_odometry_wo_map', 
+            name='ros_odometry_to_vehicle_odometry_wo_map',
+            output='screen',
+            parameters=[{
+                'use_sim_time': use_sim_time,
+                'repeat_odom': True,
+                            }]
+        ),
+
+        Node(
             package='rviz2',
             executable='rviz2',
             output='screen',
-            arguments=['-d', os.path.join(
-                get_package_share_directory('rtabmap_rviz_plugins'),
-                'launch', 'rtabmap.rviz'
-            )],
-            parameters=[{'use_sim_time': True}]
+            arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
+            parameters=[{'use_sim_time': use_sim_time}]
         ),
     ])
