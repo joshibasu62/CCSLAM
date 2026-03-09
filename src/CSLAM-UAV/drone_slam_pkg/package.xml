@@ -4,7 +4,7 @@
   <name>drone_slam_pkg</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="078bme014.himanshu@pcampus.edu.np">himanshu</maintainer>
+  <maintainer email="joshibasu62@gmail.com">joshibasu62</maintainer>
   <license>TODO: License declaration</license>
   
   <depend>px4_ros_com</depend>
