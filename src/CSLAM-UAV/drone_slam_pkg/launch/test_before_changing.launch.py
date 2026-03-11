@@ -11,13 +11,13 @@ def generate_launch_description():
     px4_dir = os.path.join(os.getenv('HOME'), 'PX4-Autopilot')
     urdf_file = '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/urdf/base_link.urdf'
 
-    # Nav2 params file
+    
     nav2_params_file = os.path.join(
         get_package_share_directory('drone_slam_pkg'), 'config',
         'nav2_params1.yaml'
     )
 
-    # Nav2 launch file from nav2_bringup
+    
     pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg') 
     nav2_launch = PathJoinSubstitution(
         [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
@@ -32,18 +32,19 @@ def generate_launch_description():
 
         'subscribe_rgbd': True,
         'subscribe_depth': False,
-        'subscribe_odom_info': True,   # ✅ CHANGED from subscribe_odom
+        # 'subscribe_odom_info': True,   #  from subscribe_odom
+        'subscribe_odom': True,        #  from subscribe_odom
         'subscribe_imu': True,
         'approx_sync': False,
         'queue_size': 200,
         'sync_queue_size': 100,
 
-        'use_action_for_goal': True,   # ✅ ADDED — enables RViz 2D Nav Goal → Nav2
+        'use_action_for_goal': True,   
 
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
         'Odom/Strategy': '0',
-        'wait_for_transform': 0.5,     # ✅ CHANGED from 0.2 (more tolerance)
+        'wait_for_transform': 0.5,     
         'Optimizer/GravitySigma': '0.1',
         'wait_imu_to_init': True,
         'publish_tf': True,
@@ -55,15 +56,13 @@ def generate_launch_description():
         'Grid/MaxObstacleHeight': '1.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
-        # 'RGBD/StartAtOrigin': 'true',  # ✅ ADDED
+        # 'RGBD/StartAtOrigin': 'true', 
     }
 
-    # ✅ ADDED — Remappings for RTAB-Map SLAM & VIZ nodes
-    # These connect RTAB-Map to Nav2's expected topics
     vslam_remappings = [
         ('imu', '/imu/data'),
-        ('map', '/map'),                          # Nav2 expects map on /map
-        ('navigate_to_pose', '/navigate_to_pose'), # Nav2 action server
+        ('map', '/map'),                          
+        ('navigate_to_pose', '/navigate_to_pose'), 
         # For Humble compatibility (https://github.com/ros2/ros2/issues/1312):
         ('navigate_to_pose/_action/feedback', '/navigate_to_pose/_action/feedback'),
         ('navigate_to_pose/_action/status', '/navigate_to_pose/_action/status'),
@@ -93,7 +92,6 @@ def generate_launch_description():
         TimerAction(
             period=1.0,
             actions=[
-                # ==================== GZ BRIDGE ====================
                 Node(
                     package='ros_gz_bridge',
                     executable='parameter_bridge',
@@ -113,7 +111,6 @@ def generate_launch_description():
                     ],
                 ),
 
-                # ==================== ROBOT STATE PUBLISHER ====================
                 Node(
                     package='robot_state_publisher',
                     executable='robot_state_publisher',
@@ -125,8 +122,6 @@ def generate_launch_description():
                     ]
                 ),
 
-                # ==================== STATIC TF ====================
-                # ✅ ADDED — "middle" frame for voxel_layer reference
                 Node(
                     package='tf2_ros',
                     executable='static_transform_publisher',
@@ -139,7 +134,7 @@ def generate_launch_description():
                     ],
                 ),
 
-                # ==================== IMU PROCESSING ====================
+                
                 Node(
                     package='imu_filter_madgwick',
                     executable='imu_filter_madgwick_node',
@@ -169,7 +164,7 @@ def generate_launch_description():
                     ],
                 ),
 
-                # ==================== RTAB-MAP PIPELINE ====================
+                
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -198,7 +193,7 @@ def generate_launch_description():
                     namespace='rtabmap',
                     output='screen',
                     parameters=[vslam_params, {'odom_frame_id': 'odom'}],
-                    remappings=vslam_remappings,  # ✅ CHANGED — use common remappings
+                    remappings=vslam_remappings,  
                     arguments=["--ros-args", "--log-level", 'warn'],
                 ),
 
@@ -210,7 +205,7 @@ def generate_launch_description():
                     namespace='rtabmap',
                     output='screen',
                     parameters=[vslam_params],
-                    remappings=vslam_remappings,   # ✅ CHANGED — no more ('odom', 'rtabmap/odom')
+                    remappings=vslam_remappings,   
                     arguments=['-d'],
                 ),
 
@@ -222,11 +217,11 @@ def generate_launch_description():
                     namespace='rtabmap',
                     output='screen',
                     parameters=[vslam_params],
-                    remappings=vslam_remappings,   # ✅ CHANGED
+                    remappings=vslam_remappings,   # 
                 ),
 
-                # ==================== POINT CLOUD FOR NAV2 COSTMAP ====================
-                # ✅ ADDED — Generates filtered point cloud for local costmap
+                
+                # Generates filtered point cloud for local costmap
                 Node(
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
@@ -244,7 +239,7 @@ def generate_launch_description():
                     ],
                 ),
 
-                # ✅ ADDED — Voxel marker visualization for debugging costmap
+                
                 Node(
                     package='rtabmap_costmap_plugins',
                     executable='voxel_marker',
@@ -253,7 +248,7 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': True}],
                 ),
 
-                # ==================== ODOMETRY → PX4 ====================
+                
                 Node(
                     package='px4_ros_com',
                     executable='ros_odometry_to_vehicle_odometry_wo_map',
@@ -268,7 +263,7 @@ def generate_launch_description():
                     ],
                 ),
 
-                # ==================== NAV2 ====================
+                
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource([nav2_launch]),
                     launch_arguments=[
@@ -277,7 +272,6 @@ def generate_launch_description():
                     ]
                 ),
 
-                # ==================== VISUALIZATION ====================
                 Node(
                     package='rviz2',
                     executable='rviz2',
@@ -286,7 +280,6 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': True}]
                 ),
 
-                # ==================== PX4 OFFBOARD CONTROL ====================
                 # Node(
                 #     package='px4_offboard',
                 #     namespace='px4_offboard',
