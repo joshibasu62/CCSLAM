@@ -167,8 +167,6 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings + [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')],
             ),
-            # ✅ NO collision_monitor
-            # ✅ NO opennav_docking
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',

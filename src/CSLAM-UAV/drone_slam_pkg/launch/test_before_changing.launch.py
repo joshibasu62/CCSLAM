@@ -39,7 +39,7 @@ def generate_launch_description():
         'queue_size': 200,
         'sync_queue_size': 100,
 
-        'use_action_for_goal': True,   
+        'use_action_for_goal': False,   
 
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
@@ -63,6 +63,7 @@ def generate_launch_description():
         ('imu', '/imu/data'),
         ('map', '/map'),                          
         ('navigate_to_pose', '/navigate_to_pose'), 
+        ('goal_pose', '/rtabmap_dummy_goal'),
         # For Humble compatibility (https://github.com/ros2/ros2/issues/1312):
         ('navigate_to_pose/_action/feedback', '/navigate_to_pose/_action/feedback'),
         ('navigate_to_pose/_action/status', '/navigate_to_pose/_action/status'),
