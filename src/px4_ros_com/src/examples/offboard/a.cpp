@@ -92,7 +92,7 @@ public:
 			publish_offboard_control_mode();
 			publish_trajectory_setpoint();
 		};
-		timer_ = this->create_wall_timer(50ms, timer_callback);  // ✅ 20Hz for smoother control
+		timer_ = this->create_wall_timer(50ms, timer_callback);  // 20Hz for smoother control
 	}
 
 private:
@@ -153,10 +153,10 @@ private:
 
 	void publish_trajectory_setpoint()
 	{
-		// ✅ FIX 3: Use reliable time comparison
+		// FIX 3: Use reliable time comparison
 		double time_since_last_twist = (this->get_clock()->now() - twist_stamp_).seconds();
 
-		// ✅ FIX 1: Increased timeout from 0.1s to 0.5s
+		// FIX 1: Increased timeout from 0.1s to 0.5s
 		if (control_State_ == kVelocityControl && time_since_last_twist > 0.5)
 		{
 			control_State_ = kPositionControl;
@@ -174,7 +174,7 @@ private:
 
 		if (control_State_ == kVelocityControl)
 		{
-			// ✅ FIX 2: Correct body-to-NED velocity rotation
+			// FIX 2: Correct body-to-NED velocity rotation
 			// Nav2 body frame: x=forward, y=left
 			// PX4 NED world frame: [0]=North, [1]=East
 			// Rotation: v_world = R(yaw) * v_body
