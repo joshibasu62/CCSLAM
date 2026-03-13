@@ -193,7 +193,7 @@ private:
 
             // Safety timeout: if rotation takes too long (e.g., 60 seconds)
             if ((this->get_clock()->now() - rotation_start_time_).seconds() > 60.0) {
-                RCLCPP_WARN(get_logger(), "⚠️ Rotation timeout! Switching to hover.");
+                RCLCPP_WARN(get_logger(), " Rotation timeout! Switching to hover.");
                 current_goal_ = local_pose_;
                 control_State_ = kPositionControl;
                 arming_stamp_ = this->get_clock()->now();

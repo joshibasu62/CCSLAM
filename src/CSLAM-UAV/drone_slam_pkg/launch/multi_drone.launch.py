@@ -70,11 +70,12 @@ def generate_launch_description():
                     cmd=[
                         "gnome-terminal", "--", "bash", "-c",
                         "cd " + px4_dir +
-                        " && PX4_SYS_AUTOSTART=4001 "
+                        " && mkdir -p build/px4_sitl_default/instance_1 "
+                        "&& PX4_SYS_AUTOSTART=4001 "
                         'PX4_GZ_MODEL_POSE="0,-0.8,0" '
                         'PX4_GZ_MODEL_ORIENTATION="0,0,1.5708" '
                         "PX4_SIM_MODEL=gz_x500_depth "
-                        "./build/px4_sitl_default/bin/px4 -i 1; exec bash"
+                        "./build/px4_sitl_default/bin/px4 $PWD/build/px4_sitl_default/etc -s etc/init.d-posix/rcS -i 1 -w $PWD/build/px4_sitl_default/instance_1; exec bash"
                     ],
                     output="screen",
                 )
@@ -352,10 +353,10 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': True,
                         'repeat_odom': True,
+                        # Pass topics as parameters instead of remapping
+                        'odom_topic': '/x500_drone_0/odom',
+                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
                     }],
-                    remappings=[
-                        ('odom', '/x500_drone_0/odom'), 
-                    ],
                 ),
 
                 # Drone 1
@@ -367,12 +368,12 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': True,
                         'repeat_odom': True,
+                        # Pass topics as parameters instead of remapping
+                        'odom_topic': '/x500_drone_1/odom',
+                        # In PX4 SITL, instance 1 (-i 1) typically prefixes topics with /px4_1
+                        'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
                     }],
-                    remappings=[
-                        ('odom', '/x500_drone_1/odom'), 
-                    ],
                 ),
-
                 # VISUALIZATION
                 Node(
                     package="rviz2",
@@ -384,36 +385,36 @@ def generate_launch_description():
 
                 # OFFBOARD CONTROL
                 # Drone 0
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='control',
-                    name='control',
-                    prefix='gnome-terminal --',
-                ),
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='control',
+                #     name='control',
+                #     prefix='gnome-terminal --',
+                # ),
 
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='velocity_control',
-                    name='velocity'
-                ),
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='velocity_control',
+                #     name='velocity'
+                # ),
 
-                # Drone 1
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='control1',
-                    name='control1',
-                    prefix='gnome-terminal --',
-                ),
+                # # Drone 1
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='control1',
+                #     name='control1',
+                #     prefix='gnome-terminal --',
+                # ),
 
-                Node(
-                    package='px4_offboard',
-                    namespace='px4_offboard',
-                    executable='velocity_control1',
-                    name='velocity1'
-                ),
+                # Node(
+                #     package='px4_offboard',
+                #     namespace='px4_offboard',
+                #     executable='velocity_control1',
+                #     name='velocity1'
+                # ),
             ],
         ),
     ])

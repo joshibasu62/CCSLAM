@@ -25,7 +25,7 @@ def generate_launch_description():
     use_respawn = LaunchConfiguration('use_respawn')
     log_level = LaunchConfiguration('log_level')
 
-    # ✅ Only nodes needed for drone navigation
+    # Only nodes needed for drone navigation
     lifecycle_nodes = [
         'controller_server',
         'smoother_server',
@@ -122,7 +122,7 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings,
             ),
-            # ✅ NO route_server
+            # NO route_server
             Node(
                 package='nav2_behaviors',
                 executable='behavior_server',
@@ -209,7 +209,7 @@ def generate_launch_description():
                         parameters=[configured_params],
                         remappings=remappings,
                     ),
-                    # ✅ NO route_server
+                    # NO route_server
                     ComposableNode(
                         package='nav2_behaviors',
                         plugin='behavior_server::BehaviorServer',
@@ -238,8 +238,8 @@ def generate_launch_description():
                         parameters=[configured_params],
                         remappings=remappings + [('cmd_vel', 'cmd_vel_nav')],
                     ),
-                    # ✅ NO collision_monitor
-                    # ✅ NO opennav_docking
+                    # NO collision_monitor
+                    # NO opennav_docking
                     ComposableNode(
                         package='nav2_lifecycle_manager',
                         plugin='nav2_lifecycle_manager::LifecycleManager',
