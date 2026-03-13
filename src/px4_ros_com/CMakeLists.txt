@@ -64,6 +64,10 @@ add_executable(offboard_control src/examples/offboard/offboard_control.cpp)
 ament_target_dependencies(offboard_control rclcpp px4_msgs geometry_msgs sensor_msgs tf2_ros tf2_eigen nav_msgs)
 install(TARGETS offboard_control DESTINATION lib/${PROJECT_NAME})
 
+add_executable(offboard_control1 src/examples/offboard/offboard_control1.cpp)
+ament_target_dependencies(offboard_control1 rclcpp px4_msgs geometry_msgs sensor_msgs tf2_ros tf2_eigen nav_msgs)
+install(TARGETS offboard_control1 DESTINATION lib/${PROJECT_NAME})
+
 # examples/offboard/offboard_control_srv
 add_executable(offboard_control_srv src/examples/offboard/offboard_control_srv.cpp)
 ament_target_dependencies(offboard_control_srv rclcpp px4_msgs)

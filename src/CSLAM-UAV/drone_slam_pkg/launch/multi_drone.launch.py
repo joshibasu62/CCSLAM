@@ -20,6 +20,7 @@ def generate_launch_description():
 
             'subscribe_rgbd': True,
             'subscribe_depth': False,
+            'subscribe_odom': True,
             'subscribe_imu': True,
             'approx_sync': False,
             'queue_size': 200,
@@ -36,7 +37,7 @@ def generate_launch_description():
             'Grid/MinGroundHeight': '-0.1',
             'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'false',
-            'Grid/MaxGroundHeight': '0.1',
+            'Grid/MaxGroundHeight': '0.15',
             'Grid/MaxObstacleHeight': '1.75',
             'Grid/NoiseFilteringRadius': '0.1',
             'Grid/NoiseFilteringMinNeighbors': '5',
@@ -121,6 +122,19 @@ def generate_launch_description():
                         ("/world/default/model/x500_depth_1/link/camera_link/sensor/StereoOV7251/depth_image", "/x500_drone_1/depth/image"),
                         ("/world/default/model/x500_depth_1/link/base_link/sensor/imu_sensor/imu", "/x500_drone_1/imu/data_raw"),
                     ],
+                ),
+
+                Node(
+                    package="tf2_ros",
+                    executable="static_transform_publisher",
+                    arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
+                    output="screen",
+                ),
+                Node(
+                    package="tf2_ros",
+                    executable="static_transform_publisher",
+                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                    output="screen",
                 ),
 
                 # STATIC TF DRONE 0

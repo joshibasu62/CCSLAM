@@ -10,15 +10,16 @@ def generate_launch_description():
             name='map_merge',
             output='screen',
             parameters=[{
+                'use_sim_time': True,
                 'robot_map_topic': 'map',
                 'robot_namespace': 'x500_drone_',
-                'merged_map_topic': 'global_map',
+                'merged_map_topic': '/map',
                 'world_frame': 'world',
                 'known_init_poses': True,
                 'merging_rate': 2.0,
-                'discovery_rate': 1.0,
+                'discovery_rate': 0.05,
                 'estimation_rate': 0.5,
-                'estimation_confidence': 1.0,
+                'estimation_confidence': 0.25,
 
                 # Drone 0 (Origin)
                 # Note: Because of your C++ fix, these parameters will be found correctly
@@ -32,16 +33,16 @@ def generate_launch_description():
                 'x500_drone_1/map_merge/init_pose_y': -0.8,
                 'x500_drone_1/map_merge/init_pose_z': 0.0,
                 'x500_drone_1/map_merge/init_pose_yaw': 0.0,
-            }]
+            }],
         ),
         
         
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz_global',
-            output='screen',
-            parameters=[{'use_sim_time': True}],
-            # You can add arguments=['-d', 'path/to/config.rviz'] if you have one
-        )
+        # Node(
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     name='rviz_global',
+        #     output='screen',
+        #     parameters=[{'use_sim_time': True}],
+        #     # You can add arguments=['-d', 'path/to/config.rviz'] if you have one
+        # )
     ])
