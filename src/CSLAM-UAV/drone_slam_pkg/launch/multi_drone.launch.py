@@ -37,10 +37,11 @@ def generate_launch_description():
             'Grid/MinGroundHeight': '-0.1',
             'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'false',
-            'Grid/MaxGroundHeight': '0.15',
+            'Grid/MaxGroundHeight': '1.25',
             'Grid/MaxObstacleHeight': '1.75',
             'Grid/NoiseFilteringRadius': '0.1',
             'Grid/NoiseFilteringMinNeighbors': '5',
+            # 'RGBD/StartAtOrigin': 'true',
 
             'database_path': f'~/.ros/{db_name}.db'
         }
@@ -74,7 +75,7 @@ def generate_launch_description():
                         " && mkdir -p build/px4_sitl_default/instance_1 "
                         "&& PX4_SYS_AUTOSTART=4001 "
                         'PX4_GZ_MODEL_POSE="0,-0.8,0" '
-                        'PX4_GZ_MODEL_ORIENTATION="0,0,1.5708" '
+                        'PX4_GZ_MODEL_ORIENTATION="0,0,0.0" '
                         "PX4_SIM_MODEL=gz_x500_depth "
                         "./build/px4_sitl_default/bin/px4 $PWD/build/px4_sitl_default/etc -s etc/init.d-posix/rcS -i 1 -w $PWD/build/px4_sitl_default/instance_1; exec bash"
                     ],
@@ -133,7 +134,7 @@ def generate_launch_description():
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                    arguments=["0", "0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
                     output="screen",
                 ),
 

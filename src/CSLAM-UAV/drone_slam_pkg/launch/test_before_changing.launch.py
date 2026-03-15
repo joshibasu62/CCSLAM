@@ -17,6 +17,10 @@ def generate_launch_description():
         'nav2_params1.yaml'
     )
 
+    # joy_config_file_path = os.path.join(
+    #     get_package_share_directory('drone_slam_pkg'), 'config',
+    #     'joy_config.yaml'
+    # )
     
     pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg') 
     nav2_launch = PathJoinSubstitution(
@@ -39,7 +43,7 @@ def generate_launch_description():
         'queue_size': 200,
         'sync_queue_size': 100,
 
-        'use_action_for_goal': False,   
+        'use_action_for_goal': True,   
 
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
@@ -56,6 +60,7 @@ def generate_launch_description():
         'Grid/MaxObstacleHeight': '1.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
+        'Grid/RayTracing': 'true',
         # 'RGBD/StartAtOrigin': 'true', 
     }
 
@@ -120,6 +125,11 @@ def generate_launch_description():
                 {'use_sim_time': True}
             ]
         ),
+
+        # Node(package='teleop_twist_joy', executable='teleop_node', output='screen',
+        #     parameters=[joy_config_file_path,
+        #                 {'use_sim_time': True}],
+        # ),
 
         Node(
             package='tf2_ros',
@@ -279,34 +289,21 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True}]
         ),
 
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='control',
-        #     name='control',
-        #     prefix='gnome-terminal --',
-        # ),
-
-        # Node(
-        #     package='px4_offboard',
-        #     namespace='px4_offboard',
-        #     executable='velocity_control',
-        #     name='velocity'
-        # ),
+        
     
 
-        TimerAction(
-            period=15.0,
-            actions=[
-                Node(
-                    package = 'px4_ros_com',
-                    executable = 'offboard_control',
-                    name = 'offboard_control',
-                    output = 'screen',
-                    parameters = [{
-                        'use_sim_time': True,
-                    }],
-                )
-            ]
-        )
+        # TimerAction(
+        #     period=15.0,
+        #     actions=[
+        #         Node(
+        #             package = 'px4_ros_com',
+        #             executable = 'offboard_control',
+        #             name = 'offboard_control',
+        #             output = 'screen',
+        #             parameters = [{
+        #                 'use_sim_time': True,
+        #             }],
+        #         )
+        #     ]
+        # )
     ])
