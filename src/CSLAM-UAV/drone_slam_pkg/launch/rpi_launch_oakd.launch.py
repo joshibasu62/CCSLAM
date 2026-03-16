@@ -60,7 +60,7 @@ def generate_launch_description():
             output='screen',
             parameters=[os.path.expanduser('~/oak_run.yaml')],
         ),
-        oak_rgb_camera_optical_frame
+        # oak_rgb_camera_optical_frame
 
         Node(
             package='tf2_ros',
