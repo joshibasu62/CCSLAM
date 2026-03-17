@@ -174,7 +174,7 @@ def generate_launch_description():
         # SLAM and Visual Odometry
         # ==========================================
         TimerAction(
-            period=15.0,
+            period=20.0,
             actions=[
                 Node(
                     package='rtabmap_sync',
@@ -241,7 +241,7 @@ def generate_launch_description():
         # Nav2 and PX4 Odometry Relay
         # ==========================================
         TimerAction(
-            period=25.0,
+            period=35.0,
             actions=[
                 Node(
                     package='rtabmap_costmap_plugins',
