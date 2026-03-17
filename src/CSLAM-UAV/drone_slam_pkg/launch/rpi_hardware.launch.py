@@ -72,6 +72,10 @@ def generate_launch_description():
 
     return LaunchDescription([
 
+        # ==========================================
+        # PHASE 1: IMMEDIATE START (0 Seconds)
+        # Core Infrastructure, Sensors, and TFs
+        # ==========================================
         ExecuteProcess(
             cmd=['micro-xrce-dds-agent', 'udp4', '--port', '8888'],
             output='screen'
@@ -104,8 +108,7 @@ def generate_launch_description():
             name='base_to_camera_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0.1', '0', '0', '0', '0', '0',
-                        'base_link', 'camera_link'],
+            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_link'],
         ),
 
         Node(
@@ -114,8 +117,7 @@ def generate_launch_description():
             name='base_to_imu_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0', '0', '0', '0',
-                        'base_link', 'imu_link'],
+            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'],
         ),
 
         Node(
@@ -124,10 +126,13 @@ def generate_launch_description():
             name='base_to_middle_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0.14', '0', '0', '0',
-                        'base_link', 'middle'],
+            arguments=['0', '0', '0.14', '0', '0', '0', 'base_link', 'middle'],
         ),
 
+        # ==========================================
+        # PHASE 2: DELAYED START (10 Seconds)
+        # IMU Processing
+        # ==========================================
         TimerAction(
             period=10.0,
             actions=[
@@ -161,7 +166,16 @@ def generate_launch_description():
                         ('imu/data', '/imu/data'),
                     ],
                 ),
+            ]
+        ),
 
+        # ==========================================
+        # PHASE 3: DELAYED START (15 Seconds)
+        # SLAM and Visual Odometry
+        # ==========================================
+        TimerAction(
+            period=15.0,
+            actions=[
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -202,16 +216,6 @@ def generate_launch_description():
                     arguments=['-d'],
                 ),
 
-                # Node(
-                #     package='rtabmap_viz',
-                #     executable='rtabmap_viz',
-                #     name='rtabmap_viz',
-                #     namespace='rtabmap',
-                #     output='screen',
-                #     parameters=[vslam_params],
-                #     remappings=vslam_remappings,
-                # ),
-
                 Node(
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
@@ -229,7 +233,16 @@ def generate_launch_description():
                         ('cloud',             '/camera/cloud'),
                     ],
                 ),
+            ]
+        ),
 
+        # ==========================================
+        # PHASE 4: DELAYED START (25 Seconds)
+        # Nav2 and PX4 Odometry Relay
+        # ==========================================
+        TimerAction(
+            period=25.0,
+            actions=[
                 Node(
                     package='rtabmap_costmap_plugins',
                     executable='voxel_marker',
@@ -262,8 +275,8 @@ def generate_launch_description():
                 ),
             ]
         ),
-        
 
+        # RViz2 (Commented out)
         # Node(
         #     package='rviz2',
         #     executable='rviz2',
