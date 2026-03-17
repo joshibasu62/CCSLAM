@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, TimerAction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.actions import Node
@@ -69,21 +69,6 @@ def generate_launch_description():
         ('navigate_to_pose/_action/send_goal',   '/navigate_to_pose/_action/send_goal'),
     ]
 
-    # ══════════════════════════════════════════════════════════════════════
-    #  TF TREE (all via static_transform_publisher, no URDF needed)
-    #
-    #  map → odom → base_link                (published by rtabmap)
-    #                 ├── camera_link         (static: where RealSense sits)
-    #                 │     ├── camera_depth_frame          ┐
-    #                 │     │     └── camera_depth_optical_frame  │ published
-    #                 │     ├── camera_color_frame                │ by the
-    #                 │     │     └── camera_color_optical_frame  │ realsense
-    #                 │     └── ...                               ┘ driver
-    #                 ├── imu_link            (static: where PX4 IMU sits)
-    #                 └── middle              (static: geometric helper)
-    #
-    #  base_link_stabilized                   (published by imu_to_tf)
-    # ══════════════════════════════════════════════════════════════════════
 
     return LaunchDescription([
 
@@ -143,135 +128,141 @@ def generate_launch_description():
                         'base_link', 'middle'],
         ),
 
-        Node(
-            package='imu_filter_madgwick',
-            executable='imu_filter_madgwick_node',
-            name='imu_filter',
-            output='screen',
-            parameters=[{
-                'use_mag': False,
-                'world_frame': 'enu',
-                'publish_tf': False,
-                'use_sim_time': use_sim_time,
-            }],
-            remappings=[
-                ('imu/data_raw', '/imu/data_converted'),
-            ],
-        ),
+        TimerAction(
+            period=10.0,
+            actions=[
+                Node(
+                    package='imu_filter_madgwick',
+                    executable='imu_filter_madgwick_node',
+                    name='imu_filter',
+                    output='screen',
+                    parameters=[{
+                        'use_mag': False,
+                        'world_frame': 'enu',
+                        'publish_tf': False,
+                        'use_sim_time': use_sim_time,
+                    }],
+                    remappings=[
+                        ('imu/data_raw', '/imu/data_converted'),
+                    ],
+                ),
 
-        Node(
-            package='rtabmap_util',
-            executable='imu_to_tf',
-            name='imu_to_tf',
-            output='screen',
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'fixed_frame_id': 'base_link_stabilized',
-                'base_frame_id': 'base_link',
-            }],
-            remappings=[
-                ('imu/data', '/imu/data'),
-            ],
-        ),
+                Node(
+                    package='rtabmap_util',
+                    executable='imu_to_tf',
+                    name='imu_to_tf',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'fixed_frame_id': 'base_link_stabilized',
+                        'base_frame_id': 'base_link',
+                    }],
+                    remappings=[
+                        ('imu/data', '/imu/data'),
+                    ],
+                ),
 
-        Node(
-            package='rtabmap_sync',
-            executable='rgbd_sync',
-            name='rgbd_sync',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'approx_sync': False,
-                'queue_size': 20,
-            }],
-            remappings=[
-                ('rgb/image',       '/camera/camera/color/image_raw'),
-                ('rgb/camera_info', '/camera/camera/color/camera_info'),
-                ('depth/image',     '/camera/camera/aligned_depth_to_color/image_raw'),
-            ],
-        ),
+                Node(
+                    package='rtabmap_sync',
+                    executable='rgbd_sync',
+                    name='rgbd_sync',
+                    namespace='rtabmap',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'approx_sync': False,
+                        'queue_size': 20,
+                    }],
+                    remappings=[
+                        ('rgb/image',       '/camera/camera/color/image_raw'),
+                        ('rgb/camera_info', '/camera/camera/color/camera_info'),
+                        ('depth/image',     '/camera/camera/aligned_depth_to_color/image_raw'),
+                    ],
+                ),
 
-        Node(
-            package='rtabmap_odom',
-            executable='rgbd_odometry',
-            name='rgbd_odometry',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[vslam_params, {'odom_frame_id': 'odom'}],
-            remappings=vslam_remappings,
-            arguments=['--ros-args', '--log-level', 'warn'],
-        ),
+                Node(
+                    package='rtabmap_odom',
+                    executable='rgbd_odometry',
+                    name='rgbd_odometry',
+                    namespace='rtabmap',
+                    output='screen',
+                    parameters=[vslam_params, {'odom_frame_id': 'odom'}],
+                    remappings=vslam_remappings,
+                    arguments=['--ros-args', '--log-level', 'warn'],
+                ),
 
-        Node(
-            package='rtabmap_slam',
-            executable='rtabmap',
-            name='rtabmap',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[vslam_params],
-            remappings=vslam_remappings,
-            arguments=['-d'],
-        ),
+                Node(
+                    package='rtabmap_slam',
+                    executable='rtabmap',
+                    name='rtabmap',
+                    namespace='rtabmap',
+                    output='screen',
+                    parameters=[vslam_params],
+                    remappings=vslam_remappings,
+                    arguments=['-d'],
+                ),
 
-        Node(
-            package='rtabmap_viz',
-            executable='rtabmap_viz',
-            name='rtabmap_viz',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[vslam_params],
-            remappings=vslam_remappings,
-        ),
+                # Node(
+                #     package='rtabmap_viz',
+                #     executable='rtabmap_viz',
+                #     name='rtabmap_viz',
+                #     namespace='rtabmap',
+                #     output='screen',
+                #     parameters=[vslam_params],
+                #     remappings=vslam_remappings,
+                # ),
 
-        Node(
-            package='rtabmap_util',
-            executable='point_cloud_xyz',
-            name='point_cloud_xyz',
-            output='screen',
-            parameters=[{
-                'decimation': 2,
-                'max_depth': 3.0,
-                'voxel_size': 0.02,
-                'use_sim_time': use_sim_time,
-            }],
-            remappings=[
-                ('depth/image',       '/camera/camera/aligned_depth_to_color/image_raw'),
-                ('depth/camera_info', '/camera/camera/color/camera_info'),
-                ('cloud',             '/camera/cloud'),
-            ],
-        ),
+                Node(
+                    package='rtabmap_util',
+                    executable='point_cloud_xyz',
+                    name='point_cloud_xyz',
+                    output='screen',
+                    parameters=[{
+                        'decimation': 2,
+                        'max_depth': 3.0,
+                        'voxel_size': 0.02,
+                        'use_sim_time': use_sim_time,
+                    }],
+                    remappings=[
+                        ('depth/image',       '/camera/camera/aligned_depth_to_color/image_raw'),
+                        ('depth/camera_info', '/camera/camera/color/camera_info'),
+                        ('cloud',             '/camera/cloud'),
+                    ],
+                ),
 
-        Node(
-            package='rtabmap_costmap_plugins',
-            executable='voxel_marker',
-            name='voxel_marker',
-            output='screen',
-            namespace='local_costmap',
-            parameters=[{'use_sim_time': use_sim_time}],
-        ),
+                Node(
+                    package='rtabmap_costmap_plugins',
+                    executable='voxel_marker',
+                    name='voxel_marker',
+                    output='screen',
+                    namespace='local_costmap',
+                    parameters=[{'use_sim_time': use_sim_time}],
+                ),
 
-        Node(
-            package='px4_ros_com',
-            executable='ros_odometry_to_vehicle_odometry_wo_map',
-            name='ros_odometry_to_vehicle_odometry_wo_map',
-            output='screen',
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'repeat_odom': True,
-            }],
-            remappings=[
-                ('odom', '/rtabmap/odom'),
-            ],
-        ),
+                Node(
+                    package='px4_ros_com',
+                    executable='ros_odometry_to_vehicle_odometry_wo_map',
+                    name='ros_odometry_to_vehicle_odometry_wo_map',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'repeat_odom': True,
+                    }],
+                    remappings=[
+                        ('odom', '/rtabmap/odom'),
+                    ],
+                ),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([nav2_launch]),
-            launch_arguments=[
-                ('use_sim_time', str(use_sim_time).lower()),
-                ('params_file', nav2_params_file),
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([nav2_launch]),
+                    launch_arguments=[
+                        ('use_sim_time', str(use_sim_time).lower()),
+                        ('params_file', nav2_params_file),
+                    ]
+                ),
             ]
         ),
+        
 
         # Node(
         #     package='rviz2',

@@ -235,10 +235,37 @@ nav_msgs::msg::OccupancyGrid::SharedPtr MergingPipeline::composeGrids(rclcpp::Lo
   }
 
   // set grid origin to its centre
-  result->info.origin.position.x =
-      -(result->info.width / 2.0) * double(result->info.resolution);
-  result->info.origin.position.y =
-      -(result->info.height / 2.0) * double(result->info.resolution);
+  // result->info.origin.position.x =
+  //     -(result->info.width / 2.0) * double(result->info.resolution);
+  // result->info.origin.position.y =
+  //     -(result->info.height / 2.0) * double(result->info.resolution);
+  // result->info.origin.orientation.w = 1.0;
+
+  // --- NEW TRUE ORIGIN CALCULATION ---
+  // 1. Find the top-left offset calculated by the OpenCV warper
+  double min_x = std::numeric_limits<double>::max();
+  double min_y = std::numeric_limits<double>::max();
+  
+  for (const auto& roi : rois) {
+    min_x = std::min(min_x, static_cast<double>(roi.tl().x));
+    min_y = std::min(min_y, static_cast<double>(roi.tl().y));
+  }
+
+  // 2. Find the original origin from the reference grid (the one that wasn't moved)
+  double ref_origin_x = 0.0;
+  double ref_origin_y = 0.0;
+  
+  for (size_t i = 0; i < transforms_.size(); ++i) {
+    if (isIdentity(transforms_[i]) && grids_[i]) {
+      ref_origin_x = grids_[i]->info.origin.position.x;
+      ref_origin_y = grids_[i]->info.origin.position.y;
+      break;
+    }
+  }
+
+  // 3. Set the true origin: Reference Origin + (Pixel Shift * Resolution)
+  result->info.origin.position.x = ref_origin_x + (min_x * double(result->info.resolution));
+  result->info.origin.position.y = ref_origin_y + (min_y * double(result->info.resolution));
   result->info.origin.orientation.w = 1.0;
 
   return result;

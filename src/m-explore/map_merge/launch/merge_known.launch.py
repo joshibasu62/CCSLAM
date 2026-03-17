@@ -23,14 +23,14 @@ def generate_launch_description():
 
                 # Drone 0 (Origin)
                 # Note: Because of your C++ fix, these parameters will be found correctly
-                'x500_drone_0/map_merge/init_pose_x': -16.0,
+                'x500_drone_0/map_merge/init_pose_x': 0.0,
                 'x500_drone_0/map_merge/init_pose_y': 0.0,
                 'x500_drone_0/map_merge/init_pose_z': 0.0,
                 'x500_drone_0/map_merge/init_pose_yaw': 0.0,
 
                 # Drone 1 (Offset by -0.8m in Y)
-                'x500_drone_1/map_merge/init_pose_x': 16.0,
-                'x500_drone_1/map_merge/init_pose_y': 0.0,
+                'x500_drone_1/map_merge/init_pose_x': 0.0,
+                'x500_drone_1/map_merge/init_pose_y': -0.8,
                 'x500_drone_1/map_merge/init_pose_z': 0.0,
                 'x500_drone_1/map_merge/init_pose_yaw': 0.0,
             }],

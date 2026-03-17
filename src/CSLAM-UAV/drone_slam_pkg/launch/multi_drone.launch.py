@@ -41,6 +41,7 @@ def generate_launch_description():
             'Grid/MaxObstacleHeight': '1.75',
             'Grid/NoiseFilteringRadius': '0.1',
             'Grid/NoiseFilteringMinNeighbors': '5',
+            'Grid/RayTracing': 'true',
             # 'RGBD/StartAtOrigin': 'true',
 
             'database_path': f'~/.ros/{db_name}.db'
@@ -134,7 +135,7 @@ def generate_launch_description():
                 Node(
                     package="tf2_ros",
                     executable="static_transform_publisher",
-                    arguments=["0", "0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
                     output="screen",
                 ),
 
@@ -285,18 +286,18 @@ def generate_launch_description():
                     arguments=["-d"],
                 ),
 
-                Node(
-                    package="rtabmap_viz",
-                    executable="rtabmap_viz",
-                    name="rtabmap_viz",
-                    namespace="x500_drone_0",
-                    output="screen",
-                    parameters=[get_vslam_params("x500_drone_0", "rtabmap_drone_0")],
-                    remappings=[
-                        ("imu", "/x500_drone_0/imu/filtered"),  
-                        ("odom", "/x500_drone_0/odom"),
-                    ],
-                ),
+                # Node(
+                #     package="rtabmap_viz",
+                #     executable="rtabmap_viz",
+                #     name="rtabmap_viz",
+                #     namespace="x500_drone_0",
+                #     output="screen",
+                #     parameters=[get_vslam_params("x500_drone_0", "rtabmap_drone_0")],
+                #     remappings=[
+                #         ("imu", "/x500_drone_0/imu/filtered"),  
+                #         ("odom", "/x500_drone_0/odom"),
+                #     ],
+                # ),
 
                 # RTAB-MAP DRONE 1
                 Node(
@@ -345,18 +346,18 @@ def generate_launch_description():
                     arguments=["-d"],
                 ),
 
-                Node(
-                    package="rtabmap_viz",
-                    executable="rtabmap_viz",
-                    name="rtabmap_viz",
-                    namespace="x500_drone_1",
-                    output="screen",
-                    parameters=[get_vslam_params("x500_drone_1", "rtabmap_drone_1")],
-                    remappings=[
-                        ("imu", "/x500_drone_1/imu/filtered"),  
-                        ("odom", "/x500_drone_1/odom"),
-                    ],
-                ),
+                # Node(
+                #     package="rtabmap_viz",
+                #     executable="rtabmap_viz",
+                #     name="rtabmap_viz",
+                #     namespace="x500_drone_1",
+                #     output="screen",
+                #     parameters=[get_vslam_params("x500_drone_1", "rtabmap_drone_1")],
+                #     remappings=[
+                #         ("imu", "/x500_drone_1/imu/filtered"),  
+                #         ("odom", "/x500_drone_1/odom"),
+                #     ],
+                # ),
 
                 # ODOMETRY → PX4 BRIDGES
                 # Drone 0
@@ -398,38 +399,7 @@ def generate_launch_description():
                     parameters=[{"use_sim_time": True}],
                 ),
 
-                # OFFBOARD CONTROL
-                # Drone 0
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='control',
-                #     name='control',
-                #     prefix='gnome-terminal --',
-                # ),
-
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='velocity_control',
-                #     name='velocity'
-                # ),
-
-                # # Drone 1
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='control1',
-                #     name='control1',
-                #     prefix='gnome-terminal --',
-                # ),
-
-                # Node(
-                #     package='px4_offboard',
-                #     namespace='px4_offboard',
-                #     executable='velocity_control1',
-                #     name='velocity1'
-                # ),
+                
             ],
         ),
     ])
