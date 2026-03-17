@@ -76,10 +76,10 @@ def generate_launch_description():
         # PHASE 1: IMMEDIATE START (0 Seconds)
         # Core Infrastructure, Sensors, and TFs
         # ==========================================
-        ExecuteProcess(
-            cmd=['micro-xrce-dds-agent', 'udp4', '--port', '8888'],
-            output='screen'
-        ),
+        # ExecuteProcess(
+        #     cmd=['micro-xrce-dds-agent', 'udp4', '--port', '8888'],
+        #     output='screen'
+        # ),
 
         Node(
             package='drone_slam_pkg',
