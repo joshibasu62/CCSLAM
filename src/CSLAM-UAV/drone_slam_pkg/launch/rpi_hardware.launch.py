@@ -252,19 +252,19 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': use_sim_time}],
                 ),
 
-                Node(
-                    package='px4_ros_com',
-                    executable='ros_odometry_to_vehicle_odometry_wo_map',
-                    name='ros_odometry_to_vehicle_odometry_wo_map',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': use_sim_time,
-                        'repeat_odom': True,
-                    }],
-                    remappings=[
-                        ('odom', '/rtabmap/odom'),
-                    ],
-                ),
+                # Node(
+                #     package='px4_ros_com',
+                #     executable='ros_odometry_to_vehicle_odometry_wo_map',
+                #     name='ros_odometry_to_vehicle_odometry_wo_map',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': use_sim_time,
+                #         'repeat_odom': True,
+                #     }],
+                #     remappings=[
+                #         ('odom', '/rtabmap/odom'),
+                #     ],
+                # ),
 
                 IncludeLaunchDescription(
                     PythonLaunchDescriptionSource([nav2_launch]),
