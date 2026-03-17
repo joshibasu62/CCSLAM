@@ -184,7 +184,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'approx_sync': False,
+                        'approx_sync': True,
                         'queue_size': 20,
                     }],
                     remappings=[
