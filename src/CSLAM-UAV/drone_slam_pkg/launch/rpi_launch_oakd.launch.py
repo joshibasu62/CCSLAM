@@ -91,14 +91,14 @@ def generate_launch_description():
             parameters=[os.path.expanduser('~/oak_run.yaml')],
         ),
 
-        # FIXED: Updated arguments to modern ROS 2 syntax
+        # FIXED: Reverted to classic universal ROS 2 arguments to prevent crashes
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_camera_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['--x', '0.1', '--y', '0', '--z', '0', '--roll', '0', '--pitch', '0', '--yaw', '0', '--frame-id', 'base_link', '--child-frame-id', 'camera_link'],
+            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_link'],
         ),
 
         Node(
@@ -107,7 +107,7 @@ def generate_launch_description():
             name='base_to_imu_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['--x', '0', '--y', '0', '--z', '0', '--roll', '0', '--pitch', '0', '--yaw', '0', '--frame-id', 'base_link', '--child-frame-id', 'imu_link'],
+            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'],
         ),
 
         Node(
@@ -116,7 +116,7 @@ def generate_launch_description():
             name='base_to_middle_tf',
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['--x', '0', '--y', '0', '--z', '0.14', '--roll', '0', '--pitch', '0', '--yaw', '0', '--frame-id', 'base_link', '--child-frame-id', 'middle'],
+            arguments=['0', '0', '0.14', '0', '0', '0', 'base_link', 'middle'],
         ),
 
         # ==========================================

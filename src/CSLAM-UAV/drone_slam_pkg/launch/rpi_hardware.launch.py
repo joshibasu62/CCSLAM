@@ -133,71 +133,41 @@ def generate_launch_description():
         # PHASE 2: DELAYED START (10 Seconds)
         # IMU Processing
         # ==========================================
-        Node(
-            package='imu_filter_madgwick',
-            executable='imu_filter_madgwick_node',
-            name='imu_filter',
-            output='screen',
-            parameters=[{
-                'use_mag': False,
-                'world_frame': 'enu',
-                'publish_tf': False,
-                'use_sim_time': use_sim_time,
-            }],
-            remappings=[
-                ('imu/data_raw', '/imu/data_converted'),
-            ],
-        ),
+        TimerAction(
+            period=10.0,
+            actions=[
+                Node(
+                    package='imu_filter_madgwick',
+                    executable='imu_filter_madgwick_node',
+                    name='imu_filter',
+                    output='screen',
+                    parameters=[{
+                        'use_mag': False,
+                        'world_frame': 'enu',
+                        'publish_tf': False,
+                        'use_sim_time': use_sim_time,
+                    }],
+                    remappings=[
+                        ('imu/data_raw', '/imu/data_converted'),
+                    ],
+                ),
 
-        Node(
-            package='rtabmap_util',
-            executable='imu_to_tf',
-            name='imu_to_tf',
-            output='screen',
-            parameters=[{
-                'use_sim_time': use_sim_time,
-                'fixed_frame_id': 'base_link_stabilized',
-                'base_frame_id': 'base_link',
-            }],
-            remappings=[
-                ('imu/data', '/imu/data'),
-            ],
+                Node(
+                    package='rtabmap_util',
+                    executable='imu_to_tf',
+                    name='imu_to_tf',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'fixed_frame_id': 'base_link_stabilized',
+                        'base_frame_id': 'base_link',
+                    }],
+                    remappings=[
+                        ('imu/data', '/imu/data'),
+                    ],
+                ),
+            ]
         ),
-        # TimerAction(
-        #     period=10.0,
-        #     actions=[
-        #         Node(
-        #             package='imu_filter_madgwick',
-        #             executable='imu_filter_madgwick_node',
-        #             name='imu_filter',
-        #             output='screen',
-        #             parameters=[{
-        #                 'use_mag': False,
-        #                 'world_frame': 'enu',
-        #                 'publish_tf': False,
-        #                 'use_sim_time': use_sim_time,
-        #             }],
-        #             remappings=[
-        #                 ('imu/data_raw', '/imu/data_converted'),
-        #             ],
-        #         ),
-
-        #         Node(
-        #             package='rtabmap_util',
-        #             executable='imu_to_tf',
-        #             name='imu_to_tf',
-        #             output='screen',
-        #             parameters=[{
-        #                 'use_sim_time': use_sim_time,
-        #                 'fixed_frame_id': 'base_link_stabilized',
-        #                 'base_frame_id': 'base_link',
-        #             }],
-        #             remappings=[
-        #                 ('imu/data', '/imu/data'),
-        #             ],
-        #         ),
-        #     ]
-        # ),
 
         # ==========================================
         # PHASE 3: DELAYED START (15 Seconds)
