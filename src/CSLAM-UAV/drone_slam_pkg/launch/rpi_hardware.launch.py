@@ -255,6 +255,20 @@ def generate_launch_description():
                 # Node(
                 #     package='px4_ros_com',
                 #     executable='ros_odometry_to_vehicle_odometry_wo_map',
+                #     name='odom_to_px4_drone_0',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': use_sim_time,
+                #         'repeat_odom': True,
+                #         # Pass topics as parameters instead of remapping
+                #         'odom_topic': '/rtabmap/odom',
+                #         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                #     }],
+                # ),
+
+                # Node(
+                #     package='px4_ros_com',
+                #     executable='ros_odometry_to_vehicle_odometry_wo_map',
                 #     name='ros_odometry_to_vehicle_odometry_wo_map',
                 #     output='screen',
                 #     parameters=[{
