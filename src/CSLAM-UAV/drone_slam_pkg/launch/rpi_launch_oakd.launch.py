@@ -7,6 +7,7 @@ from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 import os
 
+
 def generate_launch_description():
 
     use_sim_time = False
@@ -33,10 +34,8 @@ def generate_launch_description():
         'subscribe_odom': True,
         'subscribe_imu': True,
         'approx_sync': False,
-        
-        # FIXED: Changed queue_size to sync_queue_size
+        'queue_size': 200,
         'sync_queue_size': 100,
-        'topic_queue_size': 10,
 
         'use_action_for_goal': True,
 
@@ -74,56 +73,67 @@ def generate_launch_description():
 
         # ==========================================
         # PHASE 1: IMMEDIATE START (0 Seconds)
+        # Static TFs FIRST — no parameters, no output
+        # (matches the format that worked in your original OAK-D launch)
         # ==========================================
 
-        Node(
-            package='drone_slam_pkg',
-            executable='px4_imu_bridge',
-            name='px4_imu_converter',
-            output='screen'
-        ),
+        # FIX #1: Removed 'parameters' and 'output' from static TF publishers.
+        #         These can prevent publishing on resource-constrained devices.
 
-        Node(
-            package='depthai_ros_driver',
-            executable='camera_node',
-            name='oak_camera',
-            output='screen',
-            parameters=[os.path.expanduser('~/oak_run.yaml')],
-        ),
-
-        # FIXED: Reverted to classic universal ROS 2 arguments to prevent crashes
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_camera_tf',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_link'],
+            arguments=['0.1', '0', '0', '0', '0', '0',
+                        'base_link', 'camera_link'],
         ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_imu_tf',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'],
+            arguments=['0', '0', '0', '0', '0', '0',
+                        'base_link', 'imu_link'],
         ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_middle_tf',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0.14', '0', '0', '0', 'base_link', 'middle'],
+            arguments=['0', '0', '0.14', '0', '0', '0',
+                        'base_link', 'middle'],
         ),
 
         # ==========================================
-        # PHASE 2: DELAYED START (10 Seconds)
+        # PHASE 2: DELAYED START (5 Seconds)
+        # Sensors — give static TFs time to be discovered
         # ==========================================
         TimerAction(
-            period=10.0,
+            period=5.0,
+            actions=[
+                Node(
+                    package='drone_slam_pkg',
+                    executable='px4_imu_bridge',
+                    name='px4_imu_converter',
+                    output='screen'
+                ),
+
+                Node(
+                    package='depthai_ros_driver',
+                    executable='camera_node',
+                    name='oak_camera',
+                    output='screen',
+                    parameters=[os.path.expanduser('~/oak_run.yaml')],
+                ),
+            ]
+        ),
+
+        # ==========================================
+        # PHASE 3: DELAYED START (15 Seconds)
+        # IMU Processing — sensors and TFs must be ready
+        # ==========================================
+        TimerAction(
+            period=15.0,
             actions=[
                 Node(
                     package='imu_filter_madgwick',
@@ -150,6 +160,7 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                         'fixed_frame_id': 'base_link_stabilized',
                         'base_frame_id': 'base_link',
+                        'wait_for_transform': 1.0,  # FIX: increased from default 0.1
                     }],
                     remappings=[
                         ('imu/data', '/imu/data'),
@@ -159,11 +170,13 @@ def generate_launch_description():
         ),
 
         # ==========================================
-        # PHASE 3: DELAYED START (20 Seconds)
+        # PHASE 4: DELAYED START (25 Seconds)
+        # SLAM and Visual Odometry
         # ==========================================
         TimerAction(
-            period=20.0,
+            period=25.0,
             actions=[
+                # FIX #2: Added qos=1 for OAK-D BEST_EFFORT image topics
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -174,8 +187,9 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                         'approx_sync': True,
                         'approx_sync_max_interval': 0.07,
-                        # FIXED: Changed queue_size to sync_queue_size
-                        'sync_queue_size': 20,
+                        'queue_size': 20,
+                        'qos': 1,              # FIX: BEST_EFFORT to match OAK-D
+                        'qos_camera_info': 1,  # FIX: BEST_EFFORT for camera_info too
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/rgb/image_raw'),
@@ -206,6 +220,7 @@ def generate_launch_description():
                     arguments=['-d'],
                 ),
 
+                # FIX #2: Added qos=1 for point_cloud_xyz too
                 Node(
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
@@ -216,6 +231,8 @@ def generate_launch_description():
                         'max_depth': 3.0,
                         'voxel_size': 0.02,
                         'use_sim_time': use_sim_time,
+                        'qos': 1,              # FIX: match OAK-D QoS
+                        'qos_camera_info': 1,  # FIX: match OAK-D QoS
                     }],
                     remappings=[
                         ('depth/image',       '/camera/stereo/image_raw'),
@@ -227,10 +244,11 @@ def generate_launch_description():
         ),
 
         # ==========================================
-        # PHASE 4: DELAYED START (45 Seconds)
+        # PHASE 5: DELAYED START (50 Seconds)
+        # Nav2 and extras
         # ==========================================
         TimerAction(
-            period=45.0,
+            period=50.0,
             actions=[
                 Node(
                     package='rtabmap_costmap_plugins',
