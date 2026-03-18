@@ -123,7 +123,7 @@ def generate_launch_description():
                     executable='camera_node',
                     name='oak_camera',
                     output='screen',
-                    parameters=[os.path.expanduser('~/oak_run.yaml')],
+                    parameters=[os.path.expanduser('~/oak_run1.yaml')],
                 ),
             ]
         ),
