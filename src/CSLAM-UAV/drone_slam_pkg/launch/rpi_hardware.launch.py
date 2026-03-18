@@ -241,7 +241,7 @@ def generate_launch_description():
         # Nav2 and PX4 Odometry Relay
         # ==========================================
         TimerAction(
-            period=35.0,
+            period=45.0,
             actions=[
                 Node(
                     package='rtabmap_costmap_plugins',
