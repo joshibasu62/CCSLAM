@@ -99,21 +99,28 @@ def generate_launch_description():
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            name='base_to_middle_tf',
-            arguments=['0', '0', '0.14', '0', '0', '0',
-                        'base_link', 'middle'],
+            name='base_to_camera_tf',
+            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_rgb_camera_optical_frame']
         ),
 
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='camera_to_optical_tf',
-            arguments=[
-                '0', '0', '0',
-                '-1.5707963', '0', '-1.5707963',
-                'camera_link', 'camera_rgb_camera_optical_frame'
-            ],
-        ),
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     name='base_to_middle_tf',
+        #     arguments=['0', '0', '0.14', '0', '0', '0',
+        #                 'base_link', 'middle'],
+        # ),
+
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     name='camera_to_optical_tf',
+        #     arguments=[
+        #         '0', '0', '0',
+        #         '-1.5707963', '0', '-1.5707963',
+        #         'camera_link', 'camera_rgb_camera_optical_frame'
+        #     ],
+        # ),
 
         # ==========================================
         # PHASE 2: DELAYED START (5 Seconds)
