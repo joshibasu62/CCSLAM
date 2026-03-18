@@ -132,7 +132,7 @@ def generate_launch_description():
             name='camera_to_optical_tf',
             arguments=[
                 '0', '0', '0',
-                '-1.5707963', '0', '-1.5707963',
+                '0', '0', '0',
                 'camera_link', 'camera_rgb_camera_optical_frame'
             ],
         ),
