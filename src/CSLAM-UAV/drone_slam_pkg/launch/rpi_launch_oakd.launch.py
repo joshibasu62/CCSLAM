@@ -92,7 +92,7 @@ def generate_launch_description():
             executable='camera_node',
             name='oak_camera',
             output='screen',
-            parameters=[os.path.expanduser('~/oak_run1.yaml')],
+            parameters=[os.path.expanduser('~/oak_run.yaml')],
         ),
           
         Node(
@@ -100,7 +100,7 @@ def generate_launch_description():
             executable='static_transform_publisher',
             name='base_to_camera_tf',
             arguments=['0.1', '0', '0', '0', '0', '0',
-                        'base_link', 'camera_link'],
+                        'base_link', 'oak-d-base-frame'],
         ),
 
         Node(
@@ -133,20 +133,10 @@ def generate_launch_description():
             arguments=[
                 '0', '0', '0',
                 '0', '0', '0',
-                'camera_link', 'camera_rgb_camera_optical_frame'
+                'oak-d-base-frame', 'camera_rgb_camera_optical_frame'
             ],
         ),
 
-        # ==========================================
-        # PHASE 2: DELAYED START (5 Seconds)
-        # Sensors — give static TFs time to be discovered
-        # ==========================================
-        
-
-        # ==========================================
-        # PHASE 3: DELAYED START (15 Seconds)
-        # IMU Processing — sensors and TFs must be ready
-        # ==========================================
         TimerAction(
             period=15.0,
             actions=[
@@ -175,7 +165,7 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                         'fixed_frame_id': 'base_link_stabilized',
                         'base_frame_id': 'base_link',
-                        'wait_for_transform': 1.0,  # FIX: increased from default 0.1
+                        'wait_for_transform': 1.0,  
                     }],
                     remappings=[
                         ('imu/data', '/imu/data'),
@@ -184,10 +174,6 @@ def generate_launch_description():
             ]
         ),
 
-        # ==========================================
-        # PHASE 4: DELAYED START (25 Seconds)
-        # SLAM and Visual Odometry
-        # ==========================================
         TimerAction(
             period=25.0,
             actions=[
@@ -258,10 +244,6 @@ def generate_launch_description():
             ]
         ),
 
-        # ==========================================
-        # PHASE 5: DELAYED START (50 Seconds)
-        # Nav2 and extras
-        # ==========================================
         TimerAction(
             period=50.0,
             actions=[
