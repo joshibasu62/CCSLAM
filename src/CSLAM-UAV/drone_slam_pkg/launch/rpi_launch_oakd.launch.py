@@ -12,15 +12,15 @@ def generate_launch_description():
 
     use_sim_time = False
 
-    nav2_params_file = os.path.join(
-        get_package_share_directory('drone_slam_pkg'), 'config',
-        'nav2_params1.yaml'
-    )
+    # nav2_params_file = os.path.join(
+    #     get_package_share_directory('drone_slam_pkg'), 'config',
+    #     'nav2_params1.yaml'
+    # )
 
     pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg')
-    nav2_launch = PathJoinSubstitution(
-        [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
-    )
+    # nav2_launch = PathJoinSubstitution(
+    #     [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
+    # )
 
     vslam_params = {
         'use_sim_time': use_sim_time,
@@ -71,14 +71,6 @@ def generate_launch_description():
 
     return LaunchDescription([
 
-        # ==========================================
-        # PHASE 1: IMMEDIATE START (0 Seconds)
-        # Static TFs FIRST — no parameters, no output
-        # (matches the format that worked in your original OAK-D launch)
-        # ==========================================
-
-        # FIX #1: Removed 'parameters' and 'output' from static TF publishers.
-        #         These can prevent publishing on resource-constrained devices.
         
         Node(
             package='drone_slam_pkg',
@@ -92,15 +84,15 @@ def generate_launch_description():
             executable='camera_node',
             name='oak_camera',
             output='screen',
-            parameters=[os.path.expanduser('~/oak_run.yaml')],
+            parameters=[os.path.expanduser('~/oak_run1.yaml')],
         ),
           
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_camera_tf',
-            arguments=['0.1', '0', '0', '0', '0', '0',
-                        'base_link', 'oak-d-base-frame'],
+            arguments=['0.12', '0.03', '0.242', '0', '0', '0',
+                        'base_link', 'camera_link'],
         ),
 
         Node(
@@ -132,8 +124,8 @@ def generate_launch_description():
             name='camera_to_optical_tf',
             arguments=[
                 '0', '0', '0',
-                '0', '0', '0',
-                'oak-d-base-frame', 'camera_rgb_camera_optical_frame'
+                '-1.5708', '0', '-1.5708',
+                'camera_link', 'camera_rgb_camera_optical_frame'
             ],
         ),
 
@@ -177,7 +169,6 @@ def generate_launch_description():
         TimerAction(
             period=25.0,
             actions=[
-                # FIX #2: Added qos=1 for OAK-D BEST_EFFORT image topics
                 Node(
                     package='rtabmap_sync',
                     executable='rgbd_sync',
@@ -187,10 +178,10 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'approx_sync': True,
-                        'approx_sync_max_interval': 0.07,
-                        'queue_size': 20,
-                        'qos': 1,              # FIX: BEST_EFFORT to match OAK-D
-                        'qos_camera_info': 1,  # FIX: BEST_EFFORT for camera_info too
+                        'approx_sync_max_interval': 0.04,
+                        'queue_size': 200,
+                        'sync_queue_size': 100,
+                        
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/rgb/image_raw'),
@@ -221,7 +212,6 @@ def generate_launch_description():
                     arguments=['-d'],
                 ),
 
-                # FIX #2: Added qos=1 for point_cloud_xyz too
                 Node(
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
@@ -232,8 +222,7 @@ def generate_launch_description():
                         'max_depth': 3.0,
                         'voxel_size': 0.02,
                         'use_sim_time': use_sim_time,
-                        'qos': 1,              # FIX: match OAK-D QoS
-                        'qos_camera_info': 1,  # FIX: match OAK-D QoS
+                        
                     }],
                     remappings=[
                         ('depth/image',       '/camera/stereo/image_raw'),
@@ -256,13 +245,13 @@ def generate_launch_description():
                     parameters=[{'use_sim_time': use_sim_time}],
                 ),
 
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource([nav2_launch]),
-                    launch_arguments=[
-                        ('use_sim_time', str(use_sim_time).lower()),
-                        ('params_file', nav2_params_file),
-                    ]
-                ),
+                # IncludeLaunchDescription(
+                #     PythonLaunchDescriptionSource([nav2_launch]),
+                #     launch_arguments=[
+                #         ('use_sim_time', str(use_sim_time).lower()),
+                #         ('params_file', nav2_params_file),
+                #     ]
+                # ),
             ]
         ),
     ])
