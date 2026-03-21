@@ -14,7 +14,7 @@ def generate_launch_description():
     
     nav2_params_file = os.path.join(
         get_package_share_directory('drone_slam_pkg'), 'config',
-        'nav2_params1.yaml'
+        'nav2_params.yaml'
     )
 
     # joy_config_file_path = os.path.join(
@@ -219,15 +219,15 @@ def generate_launch_description():
         ),
 
         # Visualization
-        Node(
-            package='rtabmap_viz',
-            executable='rtabmap_viz',
-            name='rtabmap_viz',
-            namespace='rtabmap',
-            output='screen',
-            parameters=[vslam_params],
-            remappings=vslam_remappings,   # 
-        ),
+        # Node(
+        #     package='rtabmap_viz',
+        #     executable='rtabmap_viz',
+        #     name='rtabmap_viz',
+        #     namespace='rtabmap',
+        #     output='screen',
+        #     parameters=[vslam_params],
+        #     remappings=vslam_remappings,   # 
+        # ),
 
         
         # Generates filtered point cloud for local costmap
@@ -292,18 +292,18 @@ def generate_launch_description():
         
     
 
-        # TimerAction(
-        #     period=15.0,
-        #     actions=[
-        #         Node(
-        #             package = 'px4_ros_com',
-        #             executable = 'offboard_control',
-        #             name = 'offboard_control',
-        #             output = 'screen',
-        #             parameters = [{
-        #                 'use_sim_time': True,
-        #             }],
-        #         )
-        #     ]
-        # )
+        TimerAction(
+            period=30.0,
+            actions=[
+                Node(
+                    package = 'px4_ros_com',
+                    executable = 'offboard_control',
+                    name = 'offboard_control',
+                    output = 'screen',
+                    parameters = [{
+                        'use_sim_time': True,
+                    }],
+                )
+            ]
+        )
     ])

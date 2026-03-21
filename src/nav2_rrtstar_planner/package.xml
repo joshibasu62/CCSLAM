@@ -23,5 +23,7 @@
 
   <export>
     <build_type>ament_cmake</build_type>
+    <nav2_core plugin="${prefix}/rrtstar_plugin.xml" />
   </export>
+
 </package>
