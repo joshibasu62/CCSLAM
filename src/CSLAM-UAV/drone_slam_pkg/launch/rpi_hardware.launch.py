@@ -33,7 +33,7 @@ def generate_launch_description():
         'subscribe_depth': False,
         'subscribe_odom': True,
         'subscribe_imu': True,
-        'approx_sync': False,
+        'approx_sync': True,
         'queue_size': 200,
         'sync_queue_size': 100,
 
@@ -72,10 +72,6 @@ def generate_launch_description():
 
     return LaunchDescription([
 
-        # ==========================================
-        # PHASE 1: IMMEDIATE START (0 Seconds)
-        # Core Infrastructure, Sensors, and TFs
-        # ==========================================
         # ExecuteProcess(
         #     cmd=['micro-xrce-dds-agent', 'udp4', '--port', '8888'],
         #     output='screen'
@@ -96,6 +92,7 @@ def generate_launch_description():
             ]),
             launch_arguments={
                 'align_depth.enable': 'true',
+                'enable_sync': 'true',
                 'pointcloud.enable': 'false',
                 'depth_module.profile': '640x480x15',
                 'rgb_camera.profile': '640x480x15',
@@ -129,10 +126,6 @@ def generate_launch_description():
             arguments=['0', '0', '0.14', '0', '0', '0', 'base_link', 'middle'],
         ),
 
-        # ==========================================
-        # PHASE 2: DELAYED START (10 Seconds)
-        # IMU Processing
-        # ==========================================
         TimerAction(
             period=10.0,
             actions=[
@@ -169,10 +162,6 @@ def generate_launch_description():
             ]
         ),
 
-        # ==========================================
-        # PHASE 3: DELAYED START (15 Seconds)
-        # SLAM and Visual Odometry
-        # ==========================================
         TimerAction(
             period=20.0,
             actions=[
@@ -184,8 +173,8 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'approx_sync': True,
-                        'queue_size': 20,
+                        # 'approx_sync': True,
+                        'queue_size': 10,
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/camera/color/image_raw'),
@@ -236,10 +225,6 @@ def generate_launch_description():
             ]
         ),
 
-        # ==========================================
-        # PHASE 4: DELAYED START (25 Seconds)
-        # Nav2 and PX4 Odometry Relay
-        # ==========================================
         TimerAction(
             period=45.0,
             actions=[
@@ -290,7 +275,25 @@ def generate_launch_description():
             ]
         ),
 
-        # RViz2 (Commented out)
+        TimerAction(
+            period=50.0,
+            actions=[
+                Node(
+                    package='px4_ros_com',
+                    executable='ros_odometry_to_vehicle_odometry_wo_map',
+                    name='odom_to_px4_drone_0',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'repeat_odom': True,
+                        # Pass topics as parameters instead of remapping
+                        'odom_topic': '/rtabmap/odom',
+                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                    }],
+                ),
+            ],
+        ),
+
         # Node(
         #     package='rviz2',
         #     executable='rviz2',
