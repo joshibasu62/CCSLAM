@@ -34,8 +34,8 @@ def generate_launch_description():
         'subscribe_odom': True,
         'subscribe_imu': True,
         'approx_sync': True,
-        'queue_size': 200,
-        'sync_queue_size': 100,
+        'queue_size': 20,
+        'sync_queue_size': 10,
 
         'use_action_for_goal': True,
 
@@ -173,8 +173,8 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        # 'approx_sync': True,
-                        'queue_size': 10,
+                        'approx_sync': False,
+                        # 'queue_size': 10,
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/camera/color/image_raw'),
