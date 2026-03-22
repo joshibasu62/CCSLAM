@@ -79,13 +79,13 @@ def generate_launch_description():
             output='screen'
         ),
 
-        Node(
-            package='depthai_ros_driver',
-            executable='camera_node',
-            name='oak_camera',
-            output='screen',
-            parameters=[os.path.expanduser('~/oak_run1.yaml')],
-        ),
+        # Node(
+        #     package='depthai_ros_driver',
+        #     executable='camera_node',
+        #     name='oak_camera',
+        #     output='screen',
+        #     parameters=[os.path.expanduser('~/oak_run1.yaml')],
+        # ),
           
         Node(
             package='tf2_ros',
@@ -236,14 +236,14 @@ def generate_launch_description():
         TimerAction(
             period=50.0,
             actions=[
-                Node(
-                    package='rtabmap_costmap_plugins',
-                    executable='voxel_marker',
-                    name='voxel_marker',
-                    output='screen',
-                    namespace='local_costmap',
-                    parameters=[{'use_sim_time': use_sim_time}],
-                ),
+                # Node(
+                #     package='rtabmap_costmap_plugins',
+                #     executable='voxel_marker',
+                #     name='voxel_marker',
+                #     output='screen',
+                #     namespace='local_costmap',
+                #     parameters=[{'use_sim_time': use_sim_time}],
+                # ),
 
                 # IncludeLaunchDescription(
                 #     PythonLaunchDescriptionSource([nav2_launch]),
