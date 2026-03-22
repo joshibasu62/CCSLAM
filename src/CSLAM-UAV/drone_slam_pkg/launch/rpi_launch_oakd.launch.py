@@ -145,6 +145,7 @@ def generate_launch_description():
                     }],
                     remappings=[
                         ('imu/data_raw', '/imu/data_converted'),
+                        ('imu/data', '/imu/data'),
                     ],
                 ),
 
