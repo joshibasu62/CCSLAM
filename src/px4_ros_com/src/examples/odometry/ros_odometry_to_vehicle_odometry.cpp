@@ -160,3 +160,4 @@ int main(int argc, char *argv[])
 	rclcpp::spin(std::make_shared<RosOdometry2VehicleOdometry>());
 	rclcpp::shutdown();
 	return 0;
+}
