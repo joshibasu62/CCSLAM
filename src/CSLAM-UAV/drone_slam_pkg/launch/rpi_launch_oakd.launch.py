@@ -253,7 +253,7 @@ def generate_launch_description():
             actions=[
                 Node(
                     package='px4_ros_com',
-                    executable='ros_odometry_to_vehicle_odometry_wo_map',
+                    executable='ros_odometry_to_vehicle_odometry',
                     name='odom_to_px4_drone_0',
                     output='screen',
                     parameters=[{
