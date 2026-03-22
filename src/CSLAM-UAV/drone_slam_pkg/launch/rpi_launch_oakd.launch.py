@@ -198,7 +198,7 @@ def generate_launch_description():
                         
                     }],
                     remappings=[
-                        ('rgb/image',       '/camera/rgb/image_raw'),
+                        ('rgb/image',       '/camera/rgb/image_rect'),
                         ('rgb/camera_info', '/camera/rgb/camera_info'),
                         ('depth/image',     '/camera/stereo/image_raw'),
                     ],
