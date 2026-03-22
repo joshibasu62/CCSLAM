@@ -151,7 +151,7 @@ def generate_launch_description():
                     name='imu_filter',
                     output='screen',
                     parameters=[{
-                        'use_mag': True,
+                        'use_mag': False,
                         'world_frame': 'enu',
                         'publish_tf': False,
                         'use_sim_time': use_sim_time,
