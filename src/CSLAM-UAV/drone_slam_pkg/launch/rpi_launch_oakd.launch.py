@@ -114,7 +114,7 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_middle_tf',
-            arguments=['0', '0', '0.14', '0', '0', '0',
+            arguments=['0', '0', '0', '0', '0', '0',
                         'base_link', 'middle'],
         ),
 
@@ -232,6 +232,26 @@ def generate_launch_description():
                     ],
                 ),
             ]
+        ),
+
+
+        TimerAction(
+            period=50.0,
+            actions=[
+                Node(
+                    package='px4_ros_com',
+                    executable='ros_odometry_to_vehicle_odometry_wo_map',
+                    name='odom_to_px4_drone_0',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'repeat_odom': True,
+                        # Pass topics as parameters instead of remapping
+                        'odom_topic': '/rtabmap/odom',
+                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                    }],
+                ),
+            ],
         ),
 
         TimerAction(
