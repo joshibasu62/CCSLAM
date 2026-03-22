@@ -236,7 +236,7 @@ def generate_launch_description():
 
 
         TimerAction(
-            period=50.0,
+            period=30.0,
             actions=[
                 Node(
                     package='px4_ros_com',
