@@ -8,21 +8,6 @@ bt_navigator:
     wait_for_service_timeout: 1000
     # No plugin_lib_names needed — auto-discovered in newer Nav2
 
-bt_navigator_navigate_through_poses_rclcpp_node:
-  ros__parameters:
-
-bt_navigator_navigate_to_pose_rclcpp_node:
-  ros__parameters:
-
-
-# planner_server:
-#   ros__parameters:
-#     use_sim_time: True
-#     planner_plugins: ["GridBased"]
-#     GridBased:
-#       plugin: "nav2_rrtstar_planner::RRTStar"
-#       interpolation_resolution: 0.05
-
 planner_server:
   ros__parameters:
     expected_planner_frequency: 5.0
@@ -32,11 +17,6 @@ planner_server:
       tolerance: 0.5
       use_astar: true
       allow_unknown: true
-
-
-# planner_server:
-#   ros__parameters:
-#     use_sim_time: True
 
 controller_server:
   ros__parameters:
@@ -98,7 +78,6 @@ controller_server:
       RotateToGoal.scale: 32.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
-
 
 local_costmap:
   local_costmap:
@@ -197,9 +176,6 @@ behavior_server:
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
     rotational_acc_lim: 3.2
-
-robot_state_publisher:
-  ros__parameters:
 
 waypoint_follower:
   ros__parameters:
