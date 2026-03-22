@@ -228,28 +228,28 @@ def generate_launch_description():
         TimerAction(
             period=45.0,
             actions=[
-                Node(
-                    package='rtabmap_costmap_plugins',
-                    executable='voxel_marker',
-                    name='voxel_marker',
-                    output='screen',
-                    namespace='local_costmap',
-                    parameters=[{'use_sim_time': use_sim_time}],
-                ),
-
                 # Node(
-                #     package='px4_ros_com',
-                #     executable='ros_odometry_to_vehicle_odometry_wo_map',
-                #     name='odom_to_px4_drone_0',
+                #     package='rtabmap_costmap_plugins',
+                #     executable='voxel_marker',
+                #     name='voxel_marker',
                 #     output='screen',
-                #     parameters=[{
-                #         'use_sim_time': use_sim_time,
-                #         'repeat_odom': True,
-                #         # Pass topics as parameters instead of remapping
-                #         'odom_topic': '/rtabmap/odom',
-                #         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
-                #     }],
+                #     namespace='local_costmap',
+                #     parameters=[{'use_sim_time': use_sim_time}],
                 # ),
+
+                Node(
+                    package='px4_ros_com',
+                    executable='ros_odometry_to_vehicle_odometry',
+                    name='odom_to_px4_drone_0',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': use_sim_time,
+                        'repeat_odom': True,
+                        # Pass topics as parameters instead of remapping
+                        'odom_topic': '/rtabmap/odom',
+                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                    }],
+                ),
 
                 # Node(
                 #     package='px4_ros_com',
@@ -265,13 +265,13 @@ def generate_launch_description():
                 #     ],
                 # ),
 
-                IncludeLaunchDescription(
-                    PythonLaunchDescriptionSource([nav2_launch]),
-                    launch_arguments=[
-                        ('use_sim_time', str(use_sim_time).lower()),
-                        ('params_file', nav2_params_file),
-                    ]
-                ),
+                # IncludeLaunchDescription(
+                #     PythonLaunchDescriptionSource([nav2_launch]),
+                #     launch_arguments=[
+                #         ('use_sim_time', str(use_sim_time).lower()),
+                #         ('params_file', nav2_params_file),
+                #     ]
+                # ),
             ]
         ),
 
