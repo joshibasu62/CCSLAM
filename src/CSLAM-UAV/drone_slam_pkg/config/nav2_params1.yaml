@@ -82,6 +82,7 @@ controller_server:
 local_costmap:
   local_costmap:
     ros__parameters:
+      transform_tolerance: 3.0
       update_frequency: 5.0
       publish_frequency: 2.0
       global_frame: odom
