@@ -174,7 +174,7 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'approx_sync': False,
-                        # 'queue_size': 10,
+                        'queue_size': 30,
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/camera/color/image_raw'),
