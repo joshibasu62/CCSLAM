@@ -86,6 +86,19 @@ def generate_launch_description():
         #     output='screen',
         #     parameters=[os.path.expanduser('~/oak_run1.yaml')],
         # ),
+
+        Node(
+            package='image_proc',
+            executable='rectify_node',
+            name='rectify_color_image',
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time}],
+            remappings=[
+                ('image',       '/camera/rgb/image_raw'),
+                ('camera_info', '/camera/rgb/camera_info'),
+                ('image_rect',  '/camera/rgb/image_rect') # This is your new flattened topic!
+            ],
+        ),
           
         Node(
             package='tf2_ros',
