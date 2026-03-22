@@ -178,10 +178,10 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'approx_sync': True,
-                        'approx_sync_max_interval': 0.04,
-                        'queue_size': 200,
-                        'sync_queue_size': 100,
+                        'approx_sync': False,
+                        # 'approx_sync_max_interval': 0.04,
+                        'queue_size': 30,
+                        'sync_queue_size': 15,
                         
                     }],
                     remappings=[
