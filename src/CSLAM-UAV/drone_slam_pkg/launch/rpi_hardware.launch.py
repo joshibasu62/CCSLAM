@@ -12,15 +12,15 @@ def generate_launch_description():
 
     use_sim_time = False
 
-    nav2_params_file = os.path.join(
-        get_package_share_directory('drone_slam_pkg'), 'config',
-        'nav2_params1.yaml'
-    )
+    # nav2_params_file = os.path.join(
+    #     get_package_share_directory('drone_slam_pkg'), 'config',
+    #     'nav2_params1.yaml'
+    # )
 
-    pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg')
-    nav2_launch = PathJoinSubstitution(
-        [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
-    )
+    # pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg')
+    # nav2_launch = PathJoinSubstitution(
+    #     [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
+    # )
 
     vslam_params = {
         'use_sim_time': use_sim_time,
@@ -98,8 +98,8 @@ def generate_launch_description():
                 'align_depth.enable': 'true',
                 'enable_sync': 'true',
                 'pointcloud.enable': 'false',
-                'depth_module.profile': '640x480x15',
-                'rgb_camera.profile': '640x480x15',
+                'depth_module.depth_profile': '640x480x15',
+                'rgb_camera.color_profile': '640x480x15',
             }.items()
         ),
 
