@@ -226,8 +226,24 @@ private:
     void publish_offboard_control_mode()
     {
         OffboardControlMode msg{};
-        msg.position = true;
-        msg.velocity = true;
+
+        switch (control_State_) {
+            case kVelocityControl:
+                // In velocity control, we send X/Y speeds. 
+                // We also send Z position if velocity2d_ is true (Altitude hold)
+                msg.position = velocity2d_; 
+                msg.velocity = true;
+                break;
+                
+            default:
+                // kWaiting, kTakingOff, kRotating, kPositionControl
+                // Pure position control. We must explicitly set velocity to false 
+                // so PX4 calculates the climb/movement speed automatically!
+                msg.position = true;
+                msg.velocity = false;
+                break;
+        }
+
         msg.acceleration = false;
         msg.attitude = false;
         msg.body_rate = false;
