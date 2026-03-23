@@ -196,7 +196,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[vslam_params, {'odom_frame_id': 'odom'}],
                     remappings=vslam_remappings,
-                    arguments=['--ros-args', '--log-level', 'warn'],
+                    arguments=['--ros-args', '--log-level', 'info'],
                 ),
 
                 Node(
