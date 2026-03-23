@@ -34,8 +34,8 @@ def generate_launch_description():
         'subscribe_odom': True,
         'subscribe_imu': True,
         'approx_sync': False,
-        'queue_size': 200,
-        'sync_queue_size': 100,
+        'queue_size': 10,
+        'sync_queue_size': 10,
 
         'use_action_for_goal': True,
 
