@@ -42,6 +42,10 @@ def generate_launch_description():
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
         'Odom/Strategy': '0',
+        'Odom/ImageDecimation': '2',
+        'Vis/MaxFeatures': '500',
+        'Vis/EstimationType': '1',
+
         'wait_for_transform': 0.5,
         'Optimizer/GravitySigma': '0.1',
         'wait_imu_to_init': True,
@@ -258,7 +262,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'repeat_odom': True,
+                        'repeat_odom': False,
                         # Pass topics as parameters instead of remapping
                         'odom_topic': '/rtabmap/odom',
                         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
