@@ -34,7 +34,7 @@ def generate_launch_description():
         'subscribe_odom': True,
         'subscribe_imu': True,
         'approx_sync': True,
-        'queue_size': 20,
+        'queue_size': 10,
         'sync_queue_size': 10,
 
         'use_action_for_goal': True,
@@ -42,6 +42,10 @@ def generate_launch_description():
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
         'Odom/Strategy': '0',
+        'Odom/ImageDecimation': '2',
+        'Vis/MaxFeatures': '500',
+        'Vis/EstimationType': '1',
+
         'wait_for_transform': 0.5,
         'Optimizer/GravitySigma': '0.1',
         'wait_imu_to_init': True,
@@ -175,7 +179,7 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'approx_sync': False,
-                        'queue_size': 30,
+                        'queue_size': 10,
                     }],
                     remappings=[
                         ('rgb/image',       '/camera/camera/color/image_raw'),
