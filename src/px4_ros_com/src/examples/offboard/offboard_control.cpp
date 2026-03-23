@@ -442,7 +442,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-    std::cout << "Starting offboard control (1.5m takeoff + 270° rotation)..." << std::endl;
+    std::cout << "Starting offboard control " << std::endl;
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<OffboardControl>());
