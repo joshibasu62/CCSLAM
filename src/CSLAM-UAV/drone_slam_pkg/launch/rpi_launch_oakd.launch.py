@@ -47,11 +47,11 @@ def generate_launch_description():
         'wait_imu_to_init': True,
         'publish_tf': True,
 
-        'Grid/MinGroundHeight': '-0.1',
+        'Grid/MinGroundHeight': '0.0',
         'Grid/MapFrameProjection': 'true',
         'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '1.15',
-        'Grid/MaxObstacleHeight': '1.75',
+        'Grid/MaxGroundHeight': '0.35',
+        'Grid/MaxObstacleHeight': '0.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
         'Grid/RayTracing': 'true',
@@ -96,7 +96,7 @@ def generate_launch_description():
             remappings=[
                 ('image',       '/camera/rgb/image_raw'),
                 ('camera_info', '/camera/rgb/camera_info'),
-                ('image_rect',  '/camera/rgb/image_rect') # This is your new flattened topic!
+                ('image_rect',  '/camera/rgb/image_rect') 
             ],
         ),
           
