@@ -168,7 +168,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=20.0,
+            period=15.0,
             actions=[
                 Node(
                     package='rtabmap_sync',
@@ -231,7 +231,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=45.0,
+            period=25.0,
             actions=[
                 # Node(
                 #     package='rtabmap_costmap_plugins',
