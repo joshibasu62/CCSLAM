@@ -42,9 +42,9 @@ def generate_launch_description():
         'Odom/ResetCountdown': '1',
         'Vis/MinInliers': '15',
         'Odom/Strategy': '0',
-        'Odom/ImageDecimation': '2',
-        'Vis/MaxFeatures': '500',
-        'Vis/EstimationType': '1',
+        # 'Odom/ImageDecimation': '2',
+        # 'Vis/MaxFeatures': '500',
+        # 'Vis/EstimationType': '1',
 
         'wait_for_transform': 0.5,
         'Optimizer/GravitySigma': '0.1',
