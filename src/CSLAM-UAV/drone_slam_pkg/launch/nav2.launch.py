@@ -26,14 +26,14 @@ def generate_launch_description():
     return LaunchDescription([
         
         # Voxel marker for the local costmap (from your TimerAction block)
-        # Node(
-        #     package='rtabmap_costmap_plugins',
-        #     executable='voxel_marker',
-        #     name='voxel_marker',
-        #     output='screen',
-        #     namespace='local_costmap',
-        #     parameters=[{'use_sim_time': use_sim_time}],
-        # ),
+        Node(
+            package='rtabmap_costmap_plugins',
+            executable='voxel_marker',
+            name='voxel_marker',
+            output='screen',
+            namespace='local_costmap',
+            parameters=[{'use_sim_time': use_sim_time}],
+        ),
 
         # The exact Nav2 inclusion block you had commented out
         IncludeLaunchDescription(

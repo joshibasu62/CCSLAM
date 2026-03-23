@@ -143,7 +143,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=15.0,
+            period=5.0,
             actions=[
                 Node(
                     package='imu_filter_madgwick',
@@ -181,7 +181,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=25.0,
+            period=15.0,
             actions=[
                 Node(
                     package='rtabmap_sync',
@@ -193,8 +193,8 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                         'approx_sync': False,
                         # 'approx_sync_max_interval': 0.04,
-                        'queue_size': 30,
-                        'sync_queue_size': 15,
+                        'queue_size': 10,
+                        'sync_queue_size': 10,
                         
                     }],
                     remappings=[
@@ -249,7 +249,7 @@ def generate_launch_description():
 
 
         TimerAction(
-            period=30.0,
+            period=20.0,
             actions=[
                 Node(
                     package='px4_ros_com',
@@ -268,7 +268,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=40.0,
+            period=30.0,
             actions=[
                 Node(
                     package='rtabmap_costmap_plugins',
