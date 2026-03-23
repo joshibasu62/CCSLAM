@@ -249,7 +249,7 @@ def generate_launch_description():
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'repeat_odom': True,
+                        'repeat_odom': False,
                         # Pass topics as parameters instead of remapping
                         'odom_topic': '/rtabmap/odom',
                         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
