@@ -535,7 +535,7 @@ public:
 
         current_goal_.x = 0;
         current_goal_.y = 0;
-        current_goal_.z = -0.4;
+        current_goal_.z = -0.7;
         current_goal_.heading = 0;
 
         control_State_ = kWaiting;
@@ -544,7 +544,7 @@ public:
         arming_stamp_ = this->get_clock()->now();
         twist_stamp_ = this->get_clock()->now();
 
-        takeoff_altitude_ = -0.4;       // 0.4m above ground (NED)
+        takeoff_altitude_ = -0.7;       // 0.7m above ground (NED)
         altitude_tolerance_ = 0.15;
 
         auto timer_callback = [this]() -> void {
