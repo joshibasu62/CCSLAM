@@ -39,7 +39,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([nav2_launch]),
             launch_arguments=[
-                ('use_sim_time', str(use_sim_time).lower()),
+                ('use_sim_time', use_sim_time),
                 ('params_file', nav2_params_file),
             ]
         ),

@@ -233,14 +233,14 @@ def generate_launch_description():
         TimerAction(
             period=25.0,
             actions=[
-                # Node(
-                #     package='rtabmap_costmap_plugins',
-                #     executable='voxel_marker',
-                #     name='voxel_marker',
-                #     output='screen',
-                #     namespace='local_costmap',
-                #     parameters=[{'use_sim_time': use_sim_time}],
-                # ),
+                Node(
+                    package='rtabmap_costmap_plugins',
+                    executable='voxel_marker',
+                    name='voxel_marker',
+                    output='screen',
+                    namespace='local_costmap',
+                    parameters=[{'use_sim_time': use_sim_time}],
+                ),
 
                 Node(
                     package='px4_ros_com',
