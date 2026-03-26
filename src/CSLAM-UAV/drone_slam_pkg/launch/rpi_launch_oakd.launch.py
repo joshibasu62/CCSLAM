@@ -87,7 +87,7 @@ def generate_launch_description():
     return LaunchDescription([
 
         Node(
-            package='drone_slam_pkg1',
+            package='drone_slam_pkg',
             executable='px4_imu_bridge1',
             name='px4_imu_converter1',
             output='screen'
