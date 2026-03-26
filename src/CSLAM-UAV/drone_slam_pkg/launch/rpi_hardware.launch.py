@@ -11,6 +11,7 @@ import os
 def generate_launch_description():
 
     use_sim_time = False
+    drone_ns = 'x500_drone_0'
 
     # nav2_params_file = os.path.join(
     #     get_package_share_directory('drone_slam_pkg'), 'config',
@@ -22,57 +23,61 @@ def generate_launch_description():
     #     [pkg_nav2_bringup, 'launch', 'custom_navigation_launch.py']
     # )
 
-    vslam_params = {
-        'use_sim_time': use_sim_time,
-        'frame_id': 'base_link',
-        'map_frame_id': 'map',
-        'odom_frame_id': 'odom',
-        'guess_frame_id': 'base_link_stabilized',
+    def get_vslam_params(drone_namespace):
+        return {
+            'use_sim_time': use_sim_time,
+            'frame_id': f'{drone_namespace}/base_link',
+            'map_frame_id': f'{drone_namespace}/map',
+            'odom_frame_id': f'{drone_namespace}/odom',
+            'guess_frame_id': f'{drone_namespace}/base_link_stabilized',
 
-        'subscribe_rgbd': True,
-        'subscribe_depth': False,
-        'subscribe_odom': True,
-        'subscribe_imu': True,
-        'approx_sync': True,
-        'queue_size': 20,
-        'sync_queue_size': 10,
+            'subscribe_rgbd': False,
+            'subscribe_depth': True,
+            'subscribe_odom': True,
+            'subscribe_imu': True,
+            'approx_sync': True,
+            'queue_size': 20,
+            'sync_queue_size': 10,
 
-        'use_action_for_goal': True,
+            'use_action_for_goal': True,
 
-        'Odom/ResetCountdown': '1',
-        'Vis/MinInliers': '15',
-        'Odom/Strategy': '0',
-        # 'Odom/ImageDecimation': '2',
-        # 'Vis/MaxFeatures': '500',
-        # 'Vis/EstimationType': '1',
+            'Odom/ResetCountdown': '1',
+            'Vis/MinInliers': '15',
+            'Vis/InlierDistance': '0.1',
+            'Odom/Strategy': '0',
+            'Kp/DetectorStrategy': '10',
+            # 'Odom/ImageDecimation': '2',
+            'Vis/MaxFeatures': '300',
+            # 'Vis/EstimationType': '1',
 
-        'wait_for_transform': 0.5,
-        'Optimizer/GravitySigma': '0.1',
-        'wait_imu_to_init': True,
-        'publish_tf': True,
+            'wait_for_transform': 2.0,
+            'Optimizer/GravitySigma': '0.0',
+            'wait_imu_to_init': False,
+            'publish_tf': True,
 
-        'Grid/MinGroundHeight': '-0.1',
-        'Grid/MapFrameProjection': 'true',
-        'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '0.5',
-        'Grid/MaxObstacleHeight': '1.0',
-        'Grid/NoiseFilteringRadius': '0.1',
-        'Grid/NoiseFilteringMinNeighbors': '5',
-        'Grid/RayTracing': 'true',
-    }
+            'Grid/MinGroundHeight': '-0.1',
+            'Grid/MapFrameProjection': 'true',
+            'NormalsSegmentation': 'false',
+            'Grid/MaxGroundHeight': '0.5',
+            'Grid/MaxObstacleHeight': '1.0',
+            'Grid/NoiseFilteringRadius': '0.15',
+            'Grid/NoiseFilteringMinNeighbors': '7',
+            'Grid/RayTracing': 'true',
+        }
+
+    vslam_params = get_vslam_params(drone_ns)
 
     vslam_remappings = [
-        ('imu', '/imu/data'),
-        ('map', '/map'),
-        ('navigate_to_pose', '/navigate_to_pose'),
-        ('goal_pose', '/rtabmap_dummy_goal'),
-        ('navigate_to_pose/_action/feedback',    '/navigate_to_pose/_action/feedback'),
-        ('navigate_to_pose/_action/status',      '/navigate_to_pose/_action/status'),
-        ('navigate_to_pose/_action/cancel_goal', '/navigate_to_pose/_action/cancel_goal'),
-        ('navigate_to_pose/_action/get_result',  '/navigate_to_pose/_action/get_result'),
-        ('navigate_to_pose/_action/send_goal',   '/navigate_to_pose/_action/send_goal'),
+        ('imu', f'/{drone_ns}/imu/data'),
+        ('map', f'/{drone_ns}/map'),
+        ('navigate_to_pose', f'/{drone_ns}/navigate_to_pose'),
+        ('goal_pose', f'/{drone_ns}/rtabmap_dummy_goal'),
+        ('navigate_to_pose/_action/feedback',    f'/{drone_ns}/navigate_to_pose/_action/feedback'),
+        ('navigate_to_pose/_action/status',      f'/{drone_ns}/navigate_to_pose/_action/status'),
+        ('navigate_to_pose/_action/cancel_goal', f'/{drone_ns}/navigate_to_pose/_action/cancel_goal'),
+        ('navigate_to_pose/_action/get_result',  f'/{drone_ns}/navigate_to_pose/_action/get_result'),
+        ('navigate_to_pose/_action/send_goal',   f'/{drone_ns}/navigate_to_pose/_action/send_goal'),
     ]
-
 
     return LaunchDescription([
 
@@ -85,6 +90,7 @@ def generate_launch_description():
             package='drone_slam_pkg',
             executable='px4_imu_bridge',
             name='px4_imu_converter',
+            namespace=drone_ns,
             output='screen'
         ),
 
@@ -95,6 +101,7 @@ def generate_launch_description():
                     'launch', 'rs_launch.py')
             ]),
             launch_arguments={
+                'camera_namespace': drone_ns,  # Pushes Realsense topics into the drone namespace
                 'align_depth.enable': 'true',
                 'enable_sync': 'true',
                 'pointcloud.enable': 'false',
@@ -107,27 +114,33 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_camera_tf',
+            namespace=drone_ns,
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0.1', '0', '0', '0', '0', '0', 'base_link', 'camera_link'],
+            arguments=['0.1', '0', '0', '0', '0', '0', 
+                       f'{drone_ns}/base_link', f'{drone_ns}/camera_link'],
         ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_imu_tf',
+            namespace=drone_ns,
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0', '0', '0', '0', 'base_link', 'imu_link'],
+            arguments=['0', '0', '0', '0', '0', '0', 
+                       f'{drone_ns}/base_link', f'{drone_ns}/imu_link'],
         ),
 
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
             name='base_to_middle_tf',
+            namespace=drone_ns,
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['0', '0', '0.14', '0', '0', '0', 'base_link', 'middle'],
+            arguments=['0', '0', '0.14', '0', '0', '0', 
+                       f'{drone_ns}/base_link', f'{drone_ns}/middle'],
         ),
 
         TimerAction(
@@ -137,6 +150,7 @@ def generate_launch_description():
                     package='imu_filter_madgwick',
                     executable='imu_filter_madgwick_node',
                     name='imu_filter',
+                    namespace=drone_ns,
                     output='screen',
                     parameters=[{
                         'use_mag': False,
@@ -145,8 +159,8 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                     }],
                     remappings=[
-                        ('imu/data_raw', '/imu/data_converted'),
-                        ('imu/data', '/imu/data'),
+                        ('imu/data_raw', f'/{drone_ns}/imu/data_converted'),
+                        ('imu/data', f'/{drone_ns}/imu/data'),
                     ],
                 ),
 
@@ -154,14 +168,15 @@ def generate_launch_description():
                     package='rtabmap_util',
                     executable='imu_to_tf',
                     name='imu_to_tf',
+                    namespace=drone_ns,
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
-                        'fixed_frame_id': 'base_link_stabilized',
-                        'base_frame_id': 'base_link',
+                        'fixed_frame_id': f'{drone_ns}/base_link_stabilized',
+                        'base_frame_id': f'{drone_ns}/base_link',
                     }],
                     remappings=[
-                        ('imu/data', '/imu/data'),
+                        ('imu/data', f'/{drone_ns}/imu/data'),
                     ],
                 ),
             ]
@@ -174,7 +189,7 @@ def generate_launch_description():
                     package='rtabmap_sync',
                     executable='rgbd_sync',
                     name='rgbd_sync',
-                    namespace='rtabmap',
+                    namespace=f'{drone_ns}/rtabmap',
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
@@ -182,9 +197,9 @@ def generate_launch_description():
                         'queue_size': 10,
                     }],
                     remappings=[
-                        ('rgb/image',       '/camera/camera/color/image_raw'),
-                        ('rgb/camera_info', '/camera/camera/color/camera_info'),
-                        ('depth/image',     '/camera/camera/aligned_depth_to_color/image_raw'),
+                        ('rgb/image',       f'/{drone_ns}/camera/camera/color/image_raw'),
+                        ('rgb/camera_info', f'/{drone_ns}/camera/camera/color/camera_info'),
+                        ('depth/image',     f'/{drone_ns}/camera/camera/aligned_depth_to_color/image_raw'),
                     ],
                 ),
 
@@ -192,9 +207,9 @@ def generate_launch_description():
                     package='rtabmap_odom',
                     executable='rgbd_odometry',
                     name='rgbd_odometry',
-                    namespace='rtabmap',
+                    namespace=f'{drone_ns}/rtabmap',
                     output='screen',
-                    parameters=[vslam_params, {'odom_frame_id': 'odom'}],
+                    parameters=[vslam_params, {'odom_frame_id': f'{drone_ns}/odom'}],
                     remappings=vslam_remappings,
                     arguments=['--ros-args', '--log-level', 'info'],
                 ),
@@ -203,7 +218,7 @@ def generate_launch_description():
                     package='rtabmap_slam',
                     executable='rtabmap',
                     name='rtabmap',
-                    namespace='rtabmap',
+                    namespace=f'{drone_ns}/rtabmap',
                     output='screen',
                     parameters=[vslam_params],
                     remappings=vslam_remappings,
@@ -214,6 +229,7 @@ def generate_launch_description():
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
                     name='point_cloud_xyz',
+                    namespace=drone_ns,
                     output='screen',
                     parameters=[{
                         'decimation': 2,
@@ -222,9 +238,9 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                     }],
                     remappings=[
-                        ('depth/image',       '/camera/camera/aligned_depth_to_color/image_raw'),
-                        ('depth/camera_info', '/camera/camera/color/camera_info'),
-                        ('cloud',             '/camera/cloud'),
+                        ('depth/image',       f'/{drone_ns}/camera/camera/aligned_depth_to_color/image_raw'),
+                        ('depth/camera_info', f'/{drone_ns}/camera/camera/color/camera_info'),
+                        ('cloud',             f'/{drone_ns}/camera/cloud'),
                     ],
                 ),
             ]
@@ -237,8 +253,8 @@ def generate_launch_description():
                     package='rtabmap_costmap_plugins',
                     executable='voxel_marker',
                     name='voxel_marker',
+                    namespace=f'{drone_ns}/local_costmap',
                     output='screen',
-                    namespace='local_costmap',
                     parameters=[{'use_sim_time': use_sim_time}],
                 ),
 
@@ -246,33 +262,21 @@ def generate_launch_description():
                     package='px4_ros_com',
                     executable='ros_odometry_to_vehicle_odometry',
                     name='odom_to_px4_drone_0',
+                    namespace=drone_ns,
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'repeat_odom': False,
-                        # Pass topics as parameters instead of remapping
-                        'odom_topic': '/rtabmap/odom',
-                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                        'odom_topic': f'/{drone_ns}/rtabmap/odom',
+                        'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
                     }],
                 ),
 
-                # Node(
-                #     package='px4_ros_com',
-                #     executable='ros_odometry_to_vehicle_odometry_wo_map',
-                #     name='ros_odometry_to_vehicle_odometry_wo_map',
-                #     output='screen',
-                #     parameters=[{
-                #         'use_sim_time': use_sim_time,
-                #         'repeat_odom': True,
-                #     }],
-                #     remappings=[
-                #         ('odom', '/rtabmap/odom'),
-                #     ],
-                # ),
 
                 # IncludeLaunchDescription(
                 #     PythonLaunchDescriptionSource([nav2_launch]),
                 #     launch_arguments=[
+                #         ('namespace', drone_ns),
                 #         ('use_sim_time', str(use_sim_time).lower()),
                 #         ('params_file', nav2_params_file),
                 #     ]
@@ -280,31 +284,15 @@ def generate_launch_description():
             ]
         ),
 
-        # TimerAction(
-        #     period=50.0,
-        #     actions=[
-        #         Node(
-        #             package='px4_ros_com',
-        #             executable='ros_odometry_to_vehicle_odometry_wo_map',
-        #             name='odom_to_px4_drone_0',
-        #             output='screen',
-        #             parameters=[{
-        #                 'use_sim_time': use_sim_time,
-        #                 'repeat_odom': True,
-        #                 # Pass topics as parameters instead of remapping
-        #                 'odom_topic': '/rtabmap/odom',
-        #                 'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
-        #             }],
-        #         ),
-        #     ],
-        # ),
+        
 
         # Node(
         #     package='rviz2',
         #     executable='rviz2',
         #     name='rviz2',
+        #     namespace=drone_ns,
         #     output='screen',
-        #     arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_1.rviz'],
+        #     arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
         #     parameters=[{'use_sim_time': use_sim_time}],
         # ),
     ])
