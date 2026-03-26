@@ -165,7 +165,7 @@ def generate_launch_description():
             arguments=[
                 '0', '0', '0',
                 '-1.5708', '0', '-1.5708',
-                f'{drone_ns}/camera_link', f'{drone_ns}/camera_rgb_camera_optical_frame'
+                f'{drone_ns}/camera_link', 'camera_rgb_camera_optical_frame'
             ],
         ),
 
