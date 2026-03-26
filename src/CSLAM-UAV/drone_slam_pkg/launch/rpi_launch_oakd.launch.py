@@ -15,13 +15,13 @@ def generate_launch_description():
 
     # nav2_params_file = os.path.join(
     #     get_package_share_directory('drone_slam_pkg'), 'config',
-    #     f'{drone_ns}_nav2_params1.yaml'
+    #     nav2_params1.yaml'
     # )
 
     pkg_nav2_bringup = get_package_share_directory('drone_slam_pkg')
     
     # nav2_launch = PathJoinSubstitution(
-    #     [pkg_nav2_bringup, 'launch', f'{drone_ns}_custom_navigation_launch.py']
+    #     [pkg_nav2_bringup, 'launch', custom_navigation_launch.py']
     # )
 
     def get_vslam_params(drone_namespace, db_name='rtabmap.db'):
@@ -59,13 +59,13 @@ def generate_launch_description():
             'wait_imu_to_init': False,
             'publish_tf': True,
 
-            'Grid/MinGroundHeight': '-0.1',
+            'Grid/MinGroundHeight': '0.0',
             # 'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'true',
             'Grid/MaxGroundHeight': '0.5',
             'Grid/MaxObstacleHeight': '1.0',
             'Grid/NoiseFilteringRadius': '0.15',
-            'Grid/NoiseFilteringMinNeighbors': '7',
+            'Grid/NoiseFilteringMinNeighbors': '25',
             'Grid/RayTracing': 'true',
         }
 
@@ -93,19 +93,6 @@ def generate_launch_description():
             output='screen'
         ),
 
-        # Node(
-        #     package='depthai_ros_driver',
-        #     executable='camera_node',
-        #     name='oak_camera',
-        #     namespace=drone_ns,
-        #     output='screen',
-        #     parameters=[os.path.expanduser('~/oak_run1.yaml')],
-        #     remappings=[
-        #         (IMAGE_TOPIC,  f'/{drone_ns}/color/image_raw'),
-        #         (INFO_TOPIC,   f'/{drone_ns}/color/camera_info'),
-        #         (STEREO_TOPIC, f'/{drone_ns}/stereo/image_raw'),
-        #     ]
-        # ),
 
         Node(
             package='image_proc',
@@ -139,14 +126,6 @@ def generate_launch_description():
                         f'{drone_ns}/base_link', f'{drone_ns}/imu_link'],
         ),
 
-        # Node(
-        #     package='tf2_ros',
-        #     executable='static_transform_publisher',
-        #     name='base_to_camera_optical_tf',
-        #     namespace=drone_ns,
-        #     arguments=['0.1', '0', '0', '0', '0', '0', 
-        #                 f'{drone_ns}/base_link', f'{drone_ns}/camera_rgb_camera_optical_frame']
-        # ),
 
         Node(
             package='tf2_ros',
@@ -216,7 +195,7 @@ def generate_launch_description():
                     package='rtabmap_sync',
                     executable='rgbd_sync',
                     name='rgbd_sync',
-                    namespace=f'{drone_ns}/rtabmap',
+                    namespace=f'{drone_ns}',
                     output='screen',
                     parameters=[{
                         'use_sim_time': use_sim_time,
@@ -237,7 +216,7 @@ def generate_launch_description():
                     package='rtabmap_odom',
                     executable='rgbd_odometry',
                     name='rgbd_odometry',
-                    namespace=f'{drone_ns}/rtabmap',
+                    namespace=f'{drone_ns}',
                     output='screen',
                     parameters=[vslam_params, {'odom_frame_id': f'{drone_ns}/odom'}],
                     remappings=vslam_remappings,
@@ -248,7 +227,7 @@ def generate_launch_description():
                     package='rtabmap_slam',
                     executable='rtabmap',
                     name='rtabmap',
-                    namespace=f'{drone_ns}/rtabmap',
+                    namespace=f'{drone_ns}',
                     output='screen',
                     parameters=[vslam_params],
                     remappings=vslam_remappings,
