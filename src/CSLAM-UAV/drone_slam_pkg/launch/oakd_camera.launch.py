@@ -33,7 +33,7 @@ def generate_launch_description():
         Node(
             package='depthai_ros_driver',
             executable='camera_node',
-            name='oak_camera',
+            name='camera',
             output='screen',
             parameters=[os.path.expanduser('~/oak_run1.yaml')],
             remappings=[
