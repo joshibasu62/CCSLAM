@@ -267,7 +267,7 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'repeat_odom': False,
-                        'odom_topic': f'/{drone_ns}/rtabmap/odom',
+                        'odom_topic': f'{drone_ns}/rtabmap/odom',
                         'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
                     }],
                 ),
