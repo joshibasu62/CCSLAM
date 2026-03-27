@@ -196,9 +196,9 @@ def generate_launch_description():
                         'queue_size': 10,
                     }],
                     remappings=[
-                        ('rgb/image',       f'/{drone_ns}/camera/camera/color/image_raw'),
+                        ('rgb/image',       f'/{drone_ns}/camera/color/image_raw'),
                         ('rgb/camera_info', f'/{drone_ns}/camera/camera/color/camera_info'),
-                        ('depth/image',     f'/{drone_ns}/camera/camera/aligned_depth_to_color/image_raw'),
+                        ('depth/image',     f'/{drone_ns}/camera/aligned_depth_to_color/image_raw'),
                     ],
                 ),
 
@@ -237,8 +237,8 @@ def generate_launch_description():
                         'use_sim_time': use_sim_time,
                     }],
                     remappings=[
-                        ('depth/image',       f'/{drone_ns}/camera/camera/aligned_depth_to_color/image_raw'),
-                        ('depth/camera_info', f'/{drone_ns}/camera/camera/color/camera_info'),
+                        ('depth/image',       f'/{drone_ns}/camera/aligned_depth_to_color/image_raw'),
+                        ('depth/camera_info', f'/{drone_ns}/camera/color/camera_info'),
                         ('cloud',             f'/{drone_ns}/camera/cloud'),
                     ],
                 ),
@@ -266,8 +266,8 @@ def generate_launch_description():
                     parameters=[{
                         'use_sim_time': use_sim_time,
                         'repeat_odom': False,
-                        'map_frame_id': f'/{drone_ns}/map',
-                        'odom_topic': f'{drone_ns}/odom',
+                        'map_frame_id': f'{drone_ns}/map',
+                        'odom_topic': f'/{drone_ns}/odom',
                         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
                     }],
                 ),
