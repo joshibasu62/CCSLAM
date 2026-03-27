@@ -26,7 +26,7 @@ class PX4IMUBridge(Node):
             qos_profile)
 
         # Publisher to Standard ROS 2 IMU
-        self.publisher = self.create_publisher(Imu, '/imu/data_converted', 10)
+        self.publisher = self.create_publisher(Imu, 'x500_drone_0/imu/data_converted', 10)
 
     def listener_callback(self, msg):
         imu_msg = Imu()
