@@ -117,7 +117,7 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time}],
             arguments=['0.1', '0', '0', '0', '0', '0', 
-                       f'{drone_ns}/base_link', 'camera_link'],
+                       f'{drone_ns}/base_link', f'{drone_ns}/camera_link'],
         ),
 
         Node(
