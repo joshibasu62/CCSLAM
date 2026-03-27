@@ -90,7 +90,6 @@ def generate_launch_description():
             package='drone_slam_pkg',
             executable='px4_imu_bridge',
             name='px4_imu_converter',
-            namespace=drone_ns,
             output='screen'
         ),
 
