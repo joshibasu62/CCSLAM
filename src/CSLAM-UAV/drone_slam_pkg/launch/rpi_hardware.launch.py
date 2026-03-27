@@ -58,7 +58,7 @@ def generate_launch_description():
             'Grid/MinGroundHeight': '-0.1',
             'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'false',
-            'Grid/MaxGroundHeight': '0.5',
+            'Grid/MaxGroundHeight': '0.0',
             'Grid/MaxObstacleHeight': '1.0',
             'Grid/NoiseFilteringRadius': '0.15',
             'Grid/NoiseFilteringMinNeighbors': '7',
