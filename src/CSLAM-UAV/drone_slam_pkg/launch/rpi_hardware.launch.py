@@ -31,8 +31,8 @@ def generate_launch_description():
             'odom_frame_id': f'{drone_namespace}/odom',
             'guess_frame_id': f'{drone_namespace}/base_link_stabilized',
 
-            'subscribe_rgbd': False,
-            'subscribe_depth': True,
+            'subscribe_rgbd': True,
+            'subscribe_depth': False,
             'subscribe_odom': True,
             'subscribe_imu': True,
             'approx_sync': True,
