@@ -31,7 +31,7 @@ class PX4IMUBridge(Node):
     def listener_callback(self, msg):
         imu_msg = Imu()
         imu_msg.header.stamp = self.get_clock().now().to_msg()
-        imu_msg.header.frame_id = "imu_link" 
+        imu_msg.header.frame_id = "x500_drone_0/imu_link" 
         
         # Acceleration 
         imu_msg.linear_acceleration.x = float(msg.accelerometer_m_s2[0])
