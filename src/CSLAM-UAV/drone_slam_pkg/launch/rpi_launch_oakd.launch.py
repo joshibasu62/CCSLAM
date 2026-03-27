@@ -49,7 +49,8 @@ def generate_launch_description():
             # 'Odom/ImageDecimation': '2',
             'Vis/MaxFeatures': '300',
             # 'Vis/EstimationType': '1',
-            'Kp/DetectorStrategy': '10',
+            'Vis/FeatureType': '2',
+            'Kp/DetectorStrategy': '2',
 
             'RGBD/AngularUpdate': '0.01',
             'RGBD/LinearUpdate': '0.01',
