@@ -229,7 +229,7 @@ def generate_launch_description():
                     package='rtabmap_util',
                     executable='point_cloud_xyz',
                     name='point_cloud_xyz',
-                    namespace=drone_ns,
+                    namespace=f'{drone_ns}',
                     output='screen',
                     parameters=[{
                         'decimation': 2,
