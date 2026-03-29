@@ -10,6 +10,7 @@ def generate_launch_description():
             name='map_merge',
             output='screen',
             parameters=[{
+                'use_sim_time': False,
                 'robot_map_topic': 'map',
                 'robot_namespace': 'x500_drone_',
                 'merged_map_topic': 'global_map',
@@ -25,11 +26,11 @@ def generate_launch_description():
             }]
         ),
 
-        Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz_global',
-            output='screen',
-            parameters=[{'use_sim_time': True}],
-        )
+        # Node(
+        #     package='rviz2',
+        #     executable='rviz2',
+        #     name='rviz_global',
+        #     output='screen',
+        #     parameters=[{'use_sim_time': True}],
+        # )
     ])

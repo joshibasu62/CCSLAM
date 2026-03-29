@@ -235,41 +235,127 @@ nav_msgs::msg::OccupancyGrid::SharedPtr MergingPipeline::composeGrids(rclcpp::Lo
   }
 
   // set grid origin to its centre
-  // result->info.origin.position.x =
-  //     -(result->info.width / 2.0) * double(result->info.resolution);
-  // result->info.origin.position.y =
-  //     -(result->info.height / 2.0) * double(result->info.resolution);
-  // result->info.origin.orientation.w = 1.0;
-
-  // --- NEW TRUE ORIGIN CALCULATION ---
-  // 1. Find the top-left offset calculated by the OpenCV warper
-  double min_x = std::numeric_limits<double>::max();
-  double min_y = std::numeric_limits<double>::max();
-  
-  for (const auto& roi : rois) {
-    min_x = std::min(min_x, static_cast<double>(roi.tl().x));
-    min_y = std::min(min_y, static_cast<double>(roi.tl().y));
-  }
-
-  // 2. Find the original origin from the reference grid (the one that wasn't moved)
-  double ref_origin_x = 0.0;
-  double ref_origin_y = 0.0;
-  
-  for (size_t i = 0; i < transforms_.size(); ++i) {
-    if (isIdentity(transforms_[i]) && grids_[i]) {
-      ref_origin_x = grids_[i]->info.origin.position.x;
-      ref_origin_y = grids_[i]->info.origin.position.y;
-      break;
-    }
-  }
-
-  // 3. Set the true origin: Reference Origin + (Pixel Shift * Resolution)
-  result->info.origin.position.x = ref_origin_x + (min_x * double(result->info.resolution));
-  result->info.origin.position.y = ref_origin_y + (min_y * double(result->info.resolution));
+  result->info.origin.position.x =
+      -(result->info.width / 2.0) * double(result->info.resolution);
+  result->info.origin.position.y =
+      -(result->info.height / 2.0) * double(result->info.resolution);
   result->info.origin.orientation.w = 1.0;
+
+  // // --- NEW TRUE ORIGIN CALCULATION ---
+  // // 1. Find the top-left offset calculated by the OpenCV warper
+  // double min_x = std::numeric_limits<double>::max();
+  // double min_y = std::numeric_limits<double>::max();
+  
+  // for (const auto& roi : rois) {
+  //   min_x = std::min(min_x, static_cast<double>(roi.tl().x));
+  //   min_y = std::min(min_y, static_cast<double>(roi.tl().y));
+  // }
+
+  // // 2. Find the original origin from the reference grid (the one that wasn't moved)
+  // double ref_origin_x = 0.0;
+  // double ref_origin_y = 0.0;
+  
+  // for (size_t i = 0; i < transforms_.size(); ++i) {
+  //   if (isIdentity(transforms_[i]) && grids_[i]) {
+  //     ref_origin_x = grids_[i]->info.origin.position.x;
+  //     ref_origin_y = grids_[i]->info.origin.position.y;
+  //     break;
+  //   }
+  // }
+
+  // // 3. Set the true origin: Reference Origin + (Pixel Shift * Resolution)
+  // result->info.origin.position.x = ref_origin_x + (min_x * double(result->info.resolution));
+  // result->info.origin.position.y = ref_origin_y + (min_y * double(result->info.resolution));
+  // result->info.origin.orientation.w = 1.0;
 
   return result;
 }
+
+// nav_msgs::msg::OccupancyGrid::SharedPtr MergingPipeline::composeGrids(rclcpp::Logger logger)
+// {
+//   // for checking states. Throws a rcpputils::IllegalStateException if the condition fails.
+//   rcpputils::check_true(images_.size() == transforms_.size());
+//   rcpputils::check_true(images_.size() == grids_.size());
+
+//   if (images_.empty()) {
+//     return nullptr;
+//   }
+
+//   RCLCPP_DEBUG(logger, "[composeGrids] warping grids");
+//   internal::GridWarper warper;
+//   std::vector<cv::Mat> imgs_warped;
+//   imgs_warped.reserve(images_.size());
+//   std::vector<cv::Rect> rois;
+//   rois.reserve(images_.size());
+
+//   for (size_t i = 0; i < images_.size(); ++i) {
+//     if (!transforms_[i].empty() && !images_[i].empty()) {
+//       imgs_warped.emplace_back();
+
+//       // --- BUG FIX BEGIN ---
+//       // Clone the transform so we don't permanently alter the original estimates
+//       cv::Mat pixel_transform = transforms_[i].clone();
+      
+//       double res = grids_[i]->info.resolution;
+//       if (res <= 0.0) res = 0.05; // Failsafe for standard ROS resolution
+
+//       // Extract the map's internal dynamic origin
+//       double origin_x = grids_[i]->info.origin.position.x;
+//       double origin_y = grids_[i]->info.origin.position.y;
+
+//       // 1. Convert the mathematical meters from params.yaml into pixels (/ res)
+//       // 2. Add the dynamic grid origin so the map physically aligns 
+//       pixel_transform.at<double>(0, 2) = (pixel_transform.at<double>(0, 2) + origin_x) / res;
+//       pixel_transform.at<double>(1, 2) = (pixel_transform.at<double>(1, 2) + origin_y) / res;
+//       // --- BUG FIX END ---
+
+//       rois.emplace_back(
+//           warper.warp(images_[i], pixel_transform, imgs_warped.back()));
+//     }
+//   }
+
+//   if (imgs_warped.empty()) {
+//     return nullptr;
+//   }
+
+//   RCLCPP_DEBUG(logger, "[composeGrids] compositing result grid");
+//   nav_msgs::msg::OccupancyGrid::SharedPtr result;
+//   internal::GridCompositor compositor;
+//   result = compositor.compose(imgs_warped, rois);
+
+//   // set correct resolution to output grid.
+//   float any_resolution = 0.0;
+//   for (size_t i = 0; i < transforms_.size(); ++i) {
+//     if (isIdentity(transforms_[i])) {
+//       result->info.resolution = grids_[i]->info.resolution;
+//       break;
+//     }
+//     if (grids_[i]) {
+//       any_resolution = grids_[i]->info.resolution;
+//     }
+//   }
+//   if (result->info.resolution <= 0.f) {
+//     result->info.resolution = any_resolution;
+//   }
+
+//   // --- NEW TRUE ORIGIN CALCULATION ---
+//   // Because we baked the origin into the OpenCV pixel transform above, 
+//   // the warped grids are now in absolute global pixel space. 
+//   // The OpenCV bounding box top-left corner IS the true global origin.
+//   double min_x = std::numeric_limits<double>::max();
+//   double min_y = std::numeric_limits<double>::max();
+  
+//   for (const auto& roi : rois) {
+//     min_x = std::min(min_x, static_cast<double>(roi.tl().x));
+//     min_y = std::min(min_y, static_cast<double>(roi.tl().y));
+//   }
+
+//   result->info.origin.position.x = min_x * double(result->info.resolution);
+//   result->info.origin.position.y = min_y * double(result->info.resolution);
+//   result->info.origin.orientation.w = 1.0;
+
+//   return result;
+// }
 
 std::vector<geometry_msgs::msg::Transform> MergingPipeline::getTransforms() const
 {

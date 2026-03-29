@@ -64,7 +64,7 @@ def generate_launch_description():
             # 'Grid/MapFrameProjection': 'true',
             'NormalsSegmentation': 'true',
             'Grid/MaxGroundHeight': '0.0',
-            'Grid/MaxObstacleHeight': '1.35',
+            'Grid/MaxObstacleHeight': '1.35 ',
             'Grid/NoiseFilteringRadius': '0.15',
             'Grid/NoiseFilteringMinNeighbors': '25',
             'Grid/RayTracing': 'true',
@@ -144,7 +144,7 @@ def generate_launch_description():
             namespace=drone_ns,
             arguments=[
                 '0', '0', '0',
-                '-1.5708', '0', '-1.5708',
+                '-1.5708', '0', '-0.829 ',
                 f'{drone_ns}/camera_link', 'camera_rgb_camera_optical_frame'
             ],
         ),

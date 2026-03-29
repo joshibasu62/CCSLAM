@@ -285,7 +285,7 @@ def generate_launch_description():
             package='rviz2',
             executable='rviz2',
             output='screen',
-            arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
+            arguments=['-d', '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/simulation.rviz'],
             parameters=[{'use_sim_time': True}]
         ),
 

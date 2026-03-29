@@ -31,7 +31,7 @@ def generate_launch_description():
             'Odom/Strategy': '0',
             'wait_for_transform': 0.2,
             'Optimizer/GravitySigma': '0.1',  
-            'wait_imu_to_init': True,
+            'wait_imu_to_init': False,
             'publish_tf': True,
 
             'Grid/MinGroundHeight': '-0.1',
@@ -86,7 +86,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=20.0,
+            period=30.0,
             actions=[
 
                 # GZ BRIDGE
@@ -126,18 +126,18 @@ def generate_launch_description():
                     ],
                 ),
 
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
-                    output="screen",
-                ),
-                Node(
-                    package="tf2_ros",
-                    executable="static_transform_publisher",
-                    arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
-                    output="screen",
-                ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "0", "0", "0", "0", "0", "world", "x500_drone_0/map"],
+                #     output="screen",
+                # ),
+                # Node(
+                #     package="tf2_ros",
+                #     executable="static_transform_publisher",
+                #     arguments=["0", "-0.8", "0", "0", "0", "0", "world", "x500_drone_1/map"],
+                #     output="screen",
+                # ),
 
                 # STATIC TF DRONE 0
                 Node(package='tf2_ros', executable='static_transform_publisher',
@@ -361,35 +361,38 @@ def generate_launch_description():
 
                 # ODOMETRY → PX4 BRIDGES
                 # Drone 0
-                Node(
-                    package='px4_ros_com',
-                    executable='ros_odometry_to_vehicle_odometry_wo_map',
-                    name='odom_to_px4_drone_0',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': True,
-                        'repeat_odom': True,
-                        # Pass topics as parameters instead of remapping
-                        'odom_topic': '/x500_drone_0/odom',
-                        'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
-                    }],
-                ),
+                # Node(
+                #     package='px4_ros_com',
+                #     executable='ros_odometry_to_vehicle_odometry',
+                #     name='odom_to_px4_drone_0',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': True,
+                #         'repeat_odom': True,
+                #         # Pass topics as parameters instead of remapping
+                #         'odom_topic': '/x500_drone_0/odom',
+                #         'map_frame_id': 'x500_drone_0/map',  # Ensure this matches your RTAB-Map output
+                #         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
+                #     }],
+                # ),
 
-                # Drone 1
-                Node(
-                    package='px4_ros_com',
-                    executable='ros_odometry_to_vehicle_odometry_wo_map',
-                    name='odom_to_px4_drone_1',
-                    output='screen',
-                    parameters=[{
-                        'use_sim_time': True,
-                        'repeat_odom': True,
-                        # Pass topics as parameters instead of remapping
-                        'odom_topic': '/x500_drone_1/odom',
-                        # In PX4 SITL, instance 1 (-i 1) typically prefixes topics with /px4_1
-                        'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
-                    }],
-                ),
+                # # Drone 1
+                # Node(
+                #     package='px4_ros_com',
+                #     executable='ros_odometry_to_vehicle_odometry',
+                #     name='odom_to_px4_drone_1',
+                #     output='screen',
+                #     parameters=[{
+                #         'use_sim_time': True,
+                #         'repeat_odom': True,
+                #         # Pass topics as parameters instead of remapping
+                #         'odom_topic': '/x500_drone_1/odom',
+                #         'map_frame_id': 'x500_drone_1/map',  # Ensure this matches your RTAB-Map output
+                #         # In PX4 SITL, instance 1 (-i 1) typically prefixes topics with /px4_1
+                #         'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
+                #     }],
+                # ),
+                
                 # VISUALIZATION
                 Node(
                     package="rviz2",
@@ -398,8 +401,16 @@ def generate_launch_description():
                     arguments=["-d", '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_1.rviz'],
                     parameters=[{"use_sim_time": True}],
                 ),
+                Node(
+                    package="rviz2",
+                    executable="rviz2",
+                    output="screen",
+                    arguments=["-d", '/home/basanta-joshi/Desktop/cslam/src/CSLAM-UAV/drone_slam_pkg/rviz/drone_0.rviz'],
+                    parameters=[{"use_sim_time": True}],
+                ),
 
                 
             ],
         ),
+        
     ])
