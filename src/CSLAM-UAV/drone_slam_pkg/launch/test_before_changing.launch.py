@@ -56,7 +56,7 @@ def generate_launch_description():
         'Grid/MinGroundHeight': '-0.1',
         'Grid/MapFrameProjection': 'true',
         'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '1.15',
+        'Grid/MaxGroundHeight': '0.1',
         'Grid/MaxObstacleHeight': '1.75',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
@@ -78,9 +78,9 @@ def generate_launch_description():
     ]
 
     return LaunchDescription([
-        ExecuteProcess(
-            cmd=['MicroXRCEAgent', 'udp4', '--port', '8888']
-        ),
+        # ExecuteProcess(
+        #     cmd=['MicroXRCEAgent', 'udp4', '--port', '8888']
+        # ),
 
         ExecuteProcess(
             cmd=['gnome-terminal', '--', 'make', '-C', px4_dir, 'px4_sitl', 'gz_x500_depth'],
@@ -156,6 +156,7 @@ def generate_launch_description():
             }],
             remappings=[
                 ('imu/data_raw', '/x500_drone_0/imu/data'),
+                ('imu/data', 'imu/data'),
             ],
         ),
 
@@ -248,38 +249,43 @@ def generate_launch_description():
             ],
         ),
 
-        
-        Node(
-            package='rtabmap_costmap_plugins',
-            executable='voxel_marker',
-            output='screen',
-            namespace='local_costmap',
-            parameters=[{'use_sim_time': True}],
-        ),
+        TimerAction(
+            period=30.0,
+            actions=[
 
         
-        Node(
-            package='px4_ros_com',
-            executable='ros_odometry_to_vehicle_odometry_wo_map',
-            name='ros_odometry_to_vehicle_odometry_wo_map',
-            output='screen',
-            parameters=[{
-                'use_sim_time': True,
-                'repeat_odom': True,
-            }],
-            remappings=[
-                ('odom', '/rtabmap/odom'),
-            ],
-        ),
+                Node(
+                    package='rtabmap_costmap_plugins',
+                    executable='voxel_marker',
+                    output='screen',
+                    namespace='local_costmap',
+                    parameters=[{'use_sim_time': True}],
+                ),
 
-        
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([nav2_launch]),
-            launch_arguments=[
-                ('use_sim_time', 'true'),
-                ('params_file', nav2_params_file),
-            ]
-        ),
+                
+                Node(
+                    package='px4_ros_com',
+                    executable='ros_odometry_to_vehicle_odometry',
+                    name='ros_odometry_to_vehicle_odometry',
+                    output='screen',
+                    parameters=[{
+                        'use_sim_time': True,
+                        'repeat_odom': False,
+                    }],
+                    remappings=[
+                        ('odom', '/rtabmap/odom'),
+                    ],
+                ),
+
+                
+                IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([nav2_launch]),
+                    launch_arguments=[
+                        ('use_sim_time', 'true'),
+                        ('params_file', nav2_params_file),
+                    ]
+                ),
+            ]),
 
         Node(
             package='rviz2',
@@ -292,18 +298,18 @@ def generate_launch_description():
         
     
 
-        TimerAction(
-            period=30.0,
-            actions=[
-                Node(
-                    package = 'px4_ros_com',
-                    executable = 'offboard_control',
-                    name = 'offboard_control',
-                    output = 'screen',
-                    parameters = [{
-                        'use_sim_time': True,
-                    }],
-                )
-            ]
-        )
+        # TimerAction(
+        #     period=45.0,
+        #     actions=[
+        #         Node(
+        #             package = 'px4_ros_com',
+        #             executable = 'offboard_control',
+        #             name = 'offboard_control',
+        #             output = 'screen',
+        #             parameters = [{
+        #                 'use_sim_time': True,
+        #             }],
+        #         )
+        #     ]
+        # )
     ])

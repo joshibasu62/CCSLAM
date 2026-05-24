@@ -17,9 +17,9 @@ public:
 		Node("ros_odometry_to_vehicle_odometry"),
 		repeat_odom_(false)
 	{
-		odom_topic_ = this->declare_parameter("odom_topic", std::string("/rtabmap/odom"));
+		odom_topic_ = this->declare_parameter("odom_topic", std::string("/x500_drone_0/odom"));
         vehicle_odometry_topic_ = this->declare_parameter("vehicle_odometry_topic", std::string("/fmu/in/vehicle_visual_odometry"));
-        map_frame_id_ = this->declare_parameter("map_frame_id", std::string("map"));
+        map_frame_id_ = this->declare_parameter("map_frame_id", std::string("x500_drone_0/map"));
         repeat_odom_ = this->declare_parameter("repeat_odom", false);
 
 		

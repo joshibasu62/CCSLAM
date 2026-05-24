@@ -97,7 +97,7 @@ public:
 
 		current_goal_.x = 0;       // North position in NED earth-fixed frame, (metres)
 		current_goal_.y = 0;       // East position in NED earth-fixed frame, (metres)
-		current_goal_.z = -1.3;    // Down position (negative altitude) in NED earth-fixed frame, (metres)
+		current_goal_.z = -0.8;    // Down position (negative altitude) in NED earth-fixed frame, (metres)
 		current_goal_.heading = 0; // Euler yaw angle transforming the tangent plane relative to NED earth-fixed frame, -PI..+PI,  (radians)
 		
 		control_State_ = kPositionControl;
@@ -173,9 +173,9 @@ private:
 	{
 		arming_stamp_ = get_clock()->now();
 		current_goal_ = local_pose_;
-		current_goal_.z = current_goal_.z - 1.3; // take-off 1.3 meter over current position 
+		current_goal_.z = current_goal_.z - 0.8; // take-off 0.8 meter over current position 
 		RCLCPP_INFO(get_logger(), "Vehicle arming..");
-		RCLCPP_INFO(get_logger(), "Take off at 1.3 meter... to position=(%f,%f,%f) heading=%f",
+		RCLCPP_INFO(get_logger(), "Take off at 0.8 meter... to position=(%f,%f,%f) heading=%f",
 				current_goal_.x,
 				current_goal_.y,
 				current_goal_.z,
@@ -260,7 +260,7 @@ private:
         twist_ = *msg;
 		twist_stamp_ = this->get_clock()->now();
 
-		if(twist_stamp_.seconds() - arming_stamp_.seconds() > 5.0 && control_State_ == kPositionControl)
+		if(twist_stamp_.seconds() - arming_stamp_.seconds() > 10.0 && control_State_ == kPositionControl)
 		{
 			RCLCPP_INFO(get_logger(), "Switch to velocity control");
 			control_State_ = kVelocityControl;
@@ -304,7 +304,7 @@ private:
 
 private:
 	rclcpp::TimerBase::SharedPtr timer_;
-	double target_altitude_ = -1.3;
+	double target_altitude_ = -0.8;
 
 	rclcpp::Publisher<OffboardControlMode>::SharedPtr offboard_control_mode_publisher_;
 	rclcpp::Publisher<TrajectorySetpoint>::SharedPtr trajectory_setpoint_publisher_;

@@ -58,7 +58,7 @@ public:
 
         current_goal_.x = 0;
         current_goal_.y = 0;
-        current_goal_.z = -0.4;    //  Changed to 1.5m
+        current_goal_.z = -0.8;    //  Changed to 1.5m
         current_goal_.heading = 0;
 
         control_State_ = kWaiting;
@@ -68,7 +68,7 @@ public:
         twist_stamp_ = this->get_clock()->now();
 
         // Rotation parameters
-        takeoff_altitude_ = -0.4;          // NED: -1.5 = 1.5m above ground
+        takeoff_altitude_ = -0.8;          // NED: -1.5 = 1.5m above ground
         rotation_total_ = 270.0 * M_PI / 180.0;  // 270° in radians
         rotation_speed_ = 0.5;             // rad/s — how fast to rotate
         altitude_tolerance_ = 0.15;        // How close to target alt before rotating

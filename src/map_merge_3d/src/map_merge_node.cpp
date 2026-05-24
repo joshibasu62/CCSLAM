@@ -2,7 +2,7 @@
 
 #include <pcl_conversions/pcl_conversions.h>
 #include <rcpputils/asserts.hpp>
-// FIX 1: Change .h to .hpp
+
 #include <tf2_eigen/tf2_eigen.hpp> 
 
 namespace map_merge_3d
@@ -25,6 +25,7 @@ MapMerge3d::MapMerge3d()
   this->declare_parameter("merged_map_topic", "map");
   this->declare_parameter("world_frame", "world");
   this->declare_parameter("publish_tf", true);
+  this->declare_parameter("use_reliable_qos", false); 
 
   compositing_rate_ = this->get_parameter("compositing_rate").as_double();
   discovery_rate_ = this->get_parameter("discovery_rate").as_double();
@@ -105,9 +106,15 @@ void MapMerge3d::discovery()
 
     RCLCPP_INFO(this->get_logger(), "Subscribing to MAP topic: %s", name.c_str());
     
-    rclcpp::QoS qos(rclcpp::KeepLast(10));
-    qos.reliable();
-    qos.transient_local(); 
+    // Default to SensorDataQoS (BestEffort, Volatile) which matches most PointCloud2 publishers
+    rclcpp::QoS qos = rclcpp::SensorDataQoS();
+    qos.keep_last(10);
+
+    // Override with Reliable/TransientLocal ONLY if the parameter is explicitly set
+    if (this->get_parameter("use_reliable_qos").as_bool()) {
+      qos.reliable();
+      qos.transient_local(); 
+    }
 
     subscription.map_sub = this->create_subscription<sensor_msgs::msg::PointCloud2>(
         name, qos, 

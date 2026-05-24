@@ -100,18 +100,7 @@ Visualization Manager:
       Tree:
         merged_map:
           x500_drone_0/map:
-            x500_drone_0/odom:
-              x500_drone_0/base_link_stabilized:
-                x500_drone_0/base_link:
-                  camera_link:
-                    camera_color_frame:
-                      camera_color_optical_frame:
-                        {}
-                    camera_depth_frame:
-                      camera_depth_optical_frame:
-                        {}
-                  x500_drone_0/imu_sensor:
-                    {}
+            {}
           x500_drone_1/map:
             x500_drone_1/odom:
               x500_drone_1/base_link_stabilized:
