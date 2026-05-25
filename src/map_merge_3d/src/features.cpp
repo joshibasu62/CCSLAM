@@ -8,7 +8,7 @@
 #include <pcl/filters/filter.h>
 #include <pcl/filters/radius_outlier_removal.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/extract_indices.h>  // <--- ADD THIS LINE
+#include <pcl/filters/extract_indices.h>  
 #include <pcl/keypoints/harris_3d.h>
 #include <pcl/keypoints/sift_keypoint.h>
 #include <pcl/point_representation.h>

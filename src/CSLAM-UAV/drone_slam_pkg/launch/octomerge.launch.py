@@ -5,9 +5,6 @@ from launch_ros.actions import Node
 def generate_launch_description():
     return LaunchDescription([
         
-        # ---------------------------------------------------------
-        # 1. The 3D Map Merger Node
-        # ---------------------------------------------------------
         # Node(
         #     package='map_merge_3d',           
         #     executable='map_merge_3d_node',   
@@ -32,9 +29,6 @@ def generate_launch_description():
         #     }]
         # ),
 
-        # ---------------------------------------------------------
-        # 2. The OctoMap Server (3D to 2D Squasher)
-        # ---------------------------------------------------------
         Node(
             package='octomap_server',          
             executable='octomap_server_node',     
@@ -45,10 +39,8 @@ def generate_launch_description():
                 'resolution': 0.05,         
                 'frame_id': 'map',         
                 
-                # Changed to 'map' because the merged cloud is already global
                 'base_frame_id': 'world',         
                 
-                # Z-axis Slicing (adjust if your drones fly higher/lower)
                 'pointcloud_min_z': 0.5,         
                 'pointcloud_max_z': 1.0,         
                 'occupancy_min_z': 0.5,         
@@ -59,10 +51,8 @@ def generate_launch_description():
                 'sensor_model.max_range': 5.0  
             }],     
             remappings=[         
-                # Input: The merged 3D map from the node above
                 ('cloud_in', '/merged_3d_map'),  
                 
-                # Output: The final 2D map for RViz / Nav2
                 ('projected_map', '/merged_2d_map'),     
             ] 
         )

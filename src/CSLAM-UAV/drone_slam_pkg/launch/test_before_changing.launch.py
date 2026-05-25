@@ -40,8 +40,8 @@ def generate_launch_description():
         'subscribe_odom': True,        #  from subscribe_odom
         'subscribe_imu': True,
         'approx_sync': False,
-        'queue_size': 200,
-        'sync_queue_size': 100,
+        'queue_size': 30,
+        'sync_queue_size': 20,
 
         'use_action_for_goal': True,   
 
@@ -56,8 +56,8 @@ def generate_launch_description():
         'Grid/MinGroundHeight': '-0.1',
         'Grid/MapFrameProjection': 'true',
         'NormalsSegmentation': 'false',
-        'Grid/MaxGroundHeight': '0.1',
-        'Grid/MaxObstacleHeight': '1.75',
+        'Grid/MaxGroundHeight': '1.15',
+        'Grid/MaxObstacleHeight': '1.35',
         'Grid/NoiseFilteringRadius': '0.1',
         'Grid/NoiseFilteringMinNeighbors': '5',
         'Grid/RayTracing': 'true',
@@ -78,9 +78,9 @@ def generate_launch_description():
     ]
 
     return LaunchDescription([
-        # ExecuteProcess(
-        #     cmd=['MicroXRCEAgent', 'udp4', '--port', '8888']
-        # ),
+        ExecuteProcess(
+            cmd=['MicroXRCEAgent', 'udp4', '--port', '8888']
+        ),
 
         ExecuteProcess(
             cmd=['gnome-terminal', '--', 'make', '-C', px4_dir, 'px4_sitl', 'gz_x500_depth'],
@@ -195,7 +195,6 @@ def generate_launch_description():
             ],
         ),
 
-        # Visual Odometry
         Node(
             package='rtabmap_odom',
             executable='rgbd_odometry',
@@ -204,10 +203,9 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params, {'odom_frame_id': 'odom'}],
             remappings=vslam_remappings,  
-            arguments=["--ros-args", "--log-level", 'warn'],
+            arguments=["--ros-args", "--log-level", 'info'],
         ),
 
-        # SLAM
         Node(
             package='rtabmap_slam',
             executable='rtabmap',
@@ -219,7 +217,6 @@ def generate_launch_description():
             arguments=['-d'],
         ),
 
-        # Visualization
         # Node(
         #     package='rtabmap_viz',
         #     executable='rtabmap_viz',
@@ -296,7 +293,10 @@ def generate_launch_description():
         ),
 
         
-    
+        # The offboard control node can be launched from this launch file but it's recommended to run it separately after 
+        # checking from the QGroundControl that the drone is stable 
+        # If not stable you should do ekf2 stop and then start again in the mavlink console 
+
 
         # TimerAction(
         #     period=45.0,

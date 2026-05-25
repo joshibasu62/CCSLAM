@@ -505,26 +505,26 @@ public:
         use_sim_time_(false)
     {
         offboard_control_mode_publisher_ = this->create_publisher<OffboardControlMode>(
-            "/px4_1/fmu/in/offboard_control_mode", 10);
+            "/fmu/in/offboard_control_mode", 10);
         trajectory_setpoint_publisher_ = this->create_publisher<TrajectorySetpoint>(
-            "/px4_1/fmu/in/trajectory_setpoint", 10);
+            "/fmu/in/trajectory_setpoint", 10);
         vehicle_command_publisher_ = this->create_publisher<VehicleCommand>(
-            "/px4_1/fmu/in/vehicle_command", 10);
+            "/fmu/in/vehicle_command", 10);
 
         twist_subscriber_ = this->create_subscription<geometry_msgs::msg::Twist>(
             "/cmd_vel", 10,
             std::bind(&OffboardControl::twist_callback, this, std::placeholders::_1));
 
         local_pos_subscriber_ = this->create_subscription<px4_msgs::msg::VehicleLocalPosition>(
-            "/px4_1/fmu/out/vehicle_local_position", rclcpp::QoS(10).best_effort(),
+            "/fmu/out/vehicle_local_position", rclcpp::QoS(10).best_effort(),
             std::bind(&OffboardControl::local_pos_callback, this, std::placeholders::_1));
 
         status_subscriber_ = this->create_subscription<px4_msgs::msg::VehicleStatus>(
-            "/px4_1/fmu/out/vehicle_status_v1", rclcpp::QoS(10).best_effort(),
+            "/fmu/out/vehicle_status_v1", rclcpp::QoS(10).best_effort(),
             std::bind(&OffboardControl::vehicle_status_callback, this, std::placeholders::_1));
 
         ack_subscriber_ = this->create_subscription<px4_msgs::msg::VehicleCommandAck>(
-            "/px4_1/fmu/out/vehicle_command_ack", rclcpp::QoS(10).best_effort(),
+            "/fmu/out/vehicle_command_ack", rclcpp::QoS(10).best_effort(),
             std::bind(&OffboardControl::vehicle_cmd_ack_callback, this, std::placeholders::_1));
 
         joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(
@@ -537,7 +537,7 @@ public:
 
         current_goal_.x = 0;
         current_goal_.y = 0;
-        current_goal_.z = -0.8;
+        current_goal_.z = -1.25;
         current_goal_.heading = 0;
 
         control_State_ = kWaiting;
@@ -546,7 +546,7 @@ public:
         arming_stamp_ = this->get_clock()->now();
         twist_stamp_ = this->get_clock()->now();
 
-        takeoff_altitude_ = -0.8;       // 0.7m above ground (NED)
+        takeoff_altitude_ = -1.25;       // 0.7m above ground (NED)
         altitude_tolerance_ = 0.02;
 
         auto timer_callback = [this]() -> void {

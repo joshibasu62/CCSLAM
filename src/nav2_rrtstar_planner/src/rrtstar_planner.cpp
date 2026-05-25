@@ -114,24 +114,6 @@ Vertex* RRTStar::nearest_neighbor(double x, double y) {
 }
 
 
-// bool RRTStar::connectible(const Vertex& start, const Vertex& end) {
-//     double resolution = interpolation_resolution_;
-//     double steps = std::ceil(std::hypot(end.x - start.x, end.y - start.y) / resolution);
-//     if (steps > 0){
-//       double x_increment = (end.x - start.x) / steps;
-//       double y_increment = (end.y - start.y) / steps;
-
-//       double x = start.x, y = start.y;
-//       for (int i = 0; i < steps; ++i) {
-//           unsigned int mx, my;
-//           if (!costmap_->worldToMap(x, y, mx, my)) return false;
-//           if (costmap_->getCost(mx, my) != nav2_costmap_2d::FREE_SPACE) return false;
-//           x += x_increment;
-//           y += y_increment;
-//       }
-//     }
-//     return true;
-// }
 bool RRTStar::connectible(const Vertex& start, const Vertex& end) {
     double resolution = interpolation_resolution_;
     double steps = std::ceil(std::hypot(end.x - start.x, end.y - start.y) / resolution);
@@ -217,59 +199,6 @@ nav_msgs::msg::Path RRTStar::createPlan(
   int failed_attempts = 0;
   const int max_failed = 5000;
   
-  // for (int i = 1; i <= max_iterations_ - 1; ++i) {
-  //     // Generate a random point
-  //     double rand_x = x_dis(gen);
-  //     double rand_y = y_dis(gen);
-  //     auto new_position = std::make_unique<Vertex>(rand_x, rand_y);
-
-  //     // Find nearest neighbor and assign its parent to new_position
-  //     Vertex* nearest = nearest_neighbor(rand_x, rand_y);
-  //     new_position->parent = nearest;  // Use raw pointer to nearest vertex
-  //     new_position->cost = calculate_distance(nearest->x, nearest->y, *new_position);
-
-  //     if (connectible(*nearest, *new_position)) {
-  //         // Perform rewire operation
-  //         double ball_radius = calculateBallRadius(tree_.size(), 2, 2.0);
-
-  //         std::vector<int> vertices_inside_circle = findVerticesInsideCircle(new_position->x, new_position->y, ball_radius);
-  //         tree_.emplace_back(std::move(new_position));
-
-  //         // RCLCPP_INFO(node_->get_logger(), "New vertex x: %.4f", tree_.back()->x);
-  //         // RCLCPP_INFO(node_->get_logger(), "New vertex y: %.4f", tree_.back()->y);
-
-  //         double total_cost_for_new_position = calculate_cost_from_start(*tree_.back());
-
-  //         int num_of_rewiring = 0;
-
-  //         // Check if there is a better route from start towards the new position
-  //         for (size_t j = 0; j < vertices_inside_circle.size(); ++j) {
-  //           int index = vertices_inside_circle[j];
-  //           double potential_cost = calculate_cost_from_start(*tree_[index]) + calculate_distance(tree_.back()->x, tree_.back()->y, *tree_[index]);
-  //           if (potential_cost < total_cost_for_new_position && connectible(*tree_.back(), *tree_[index])) {
-  //             tree_.back()->parent = tree_[index].get();
-  //             tree_.back()->cost = calculate_distance(tree_.back()->x, tree_.back()->y, *tree_[index]);
-  //             total_cost_for_new_position = potential_cost;
-  //             num_of_rewiring += 1;
-  //           }
-  //         }
-
-  //         // Check if any existing vertex may benefit from being connected by the new position
-  //         for (size_t j = 0; j < vertices_inside_circle.size(); ++j) {
-  //           int index = vertices_inside_circle[j];
-  //           double current_cost = calculate_cost_from_start(*tree_[index]);
-  //           double potential_cost = calculate_cost_from_start(*tree_.back()) + calculate_distance(tree_.back()->x, tree_.back()->y, *tree_[index]);
-  //           if (potential_cost < current_cost && connectible(*tree_.back(), *tree_[index])) {
-  //             tree_[index]->parent = tree_.back().get();
-  //             tree_[index]->cost = calculate_distance(tree_.back()->x, tree_.back()->y, *tree_[index]);
-  //             num_of_rewiring += 1;
-  //           }
-  //         }
-  //     } else {
-  //         i -= 1;
-  //     }
-  
-  // }
   for (int i = 1; i <= max_iterations_ - 1; ++i) {
       if (cancel_checker()) {
           RCLCPP_WARN(node_->get_logger(), "RRT* cancelled");

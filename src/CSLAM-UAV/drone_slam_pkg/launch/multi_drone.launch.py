@@ -88,8 +88,6 @@ def generate_launch_description():
         TimerAction(
             period=30.0,
             actions=[
-
-                # GZ BRIDGE
                 Node(
                     package="ros_gz_bridge",
                     executable="parameter_bridge",
@@ -139,7 +137,7 @@ def generate_launch_description():
                 #     output="screen",
                 # ),
 
-                # STATIC TF DRONE 0
+                # x500_drone_0
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0', '0', '0', '0', '0', '0',
                                 'x500_drone_0/base_link', 'x500_depth_0/base_link/imu_sensor']),
@@ -156,7 +154,7 @@ def generate_launch_description():
                      arguments=['0.01233', '-0.03', '0.01878', '0', '0', '0',
                                 'x500_drone_0/camera_link', 'x500_drone_0/camera_link/StereoOV7251']),
 
-                # STATIC TF DRONE 1
+                # x500_drone_1
                 Node(package='tf2_ros', executable='static_transform_publisher',
                      arguments=['0', '0', '0', '0', '0', '0',
                                 'x500_drone_1/base_link', 'x500_depth_1/base_link/imu_sensor']),
@@ -173,6 +171,8 @@ def generate_launch_description():
                      arguments=['0.01233', '-0.03', '0.01878', '0', '0', '0',
                                 'x500_drone_1/camera_link', 'x500_drone_1/camera_link/StereoOV7251']),
 
+
+                #x500_drone_0 madgwick filter
                 Node(
                     package='imu_filter_madgwick',
                     executable='imu_filter_madgwick_node',
@@ -205,7 +205,8 @@ def generate_launch_description():
                     ],
                 ),
 
-                # IMU FILTER DRONE 1
+
+                # x500_drone_1 madgwick filter
                 Node(
                     package='imu_filter_madgwick',
                     executable='imu_filter_madgwick_node',
@@ -238,6 +239,8 @@ def generate_launch_description():
                     ],
                 ),
 
+
+                # RTAB-MAP x500_drone_0
                 Node(
                     package="rtabmap_sync",
                     executable="rgbd_sync",
@@ -297,7 +300,8 @@ def generate_launch_description():
                 #     ],
                 # ),
 
-                # RTAB-MAP DRONE 1
+
+                # RTAB-MAP x500_drone_1
                 Node(
                     package="rtabmap_sync",
                     executable="rgbd_sync",
@@ -357,8 +361,7 @@ def generate_launch_description():
                 #     ],
                 # ),
 
-                # ODOMETRY → PX4 BRIDGES
-                # Drone 0
+
                 # Node(
                 #     package='px4_ros_com',
                 #     executable='ros_odometry_to_vehicle_odometry',
@@ -366,15 +369,13 @@ def generate_launch_description():
                 #     output='screen',
                 #     parameters=[{
                 #         'use_sim_time': True,
-                #         'repeat_odom': True,
-                #         # Pass topics as parameters instead of remapping
+                #         'repeat_odom': False,
                 #         'odom_topic': '/x500_drone_0/odom',
-                #         'map_frame_id': 'x500_drone_0/map',  # Ensure this matches your RTAB-Map output
+                #         'map_frame_id': 'x500_drone_0/map',  -
                 #         'vehicle_odometry_topic': '/fmu/in/vehicle_visual_odometry'
                 #     }],
                 # ),
 
-                # # Drone 1
                 # Node(
                 #     package='px4_ros_com',
                 #     executable='ros_odometry_to_vehicle_odometry',
@@ -382,16 +383,15 @@ def generate_launch_description():
                 #     output='screen',
                 #     parameters=[{
                 #         'use_sim_time': True,
-                #         'repeat_odom': True,
-                #         # Pass topics as parameters instead of remapping
-                #         'odom_topic': '/x500_drone_1/odom',
-                #         'map_frame_id': 'x500_drone_1/map',  # Ensure this matches your RTAB-Map output
-                #         # In PX4 SITL, instance 1 (-i 1) typically prefixes topics with /px4_1
-                #         'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
+                #         'repeat_odom': False,
+-                #        'odom_topic': '/x500_drone_1/odom',
+                #         'map_frame_id': 'x500_drone_1/map',  -
+-                #        'vehicle_odometry_topic': '/px4_1/fmu/in/vehicle_visual_odometry'
                 #     }],
                 # ),
                 
-                # VISUALIZATION
+
+
                 Node(
                     package="rviz2",
                     executable="rviz2",
