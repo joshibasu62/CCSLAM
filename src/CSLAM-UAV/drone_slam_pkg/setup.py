@@ -63,6 +63,7 @@ setup(
             'px4_imu_bridge = drone_slam_pkg.px4_imu_bridge:main',
             'px4_imu_bridge1 = drone_slam_pkg.px4_imu_bridge1:main',
             'visual_odom_converter = drone_slam_pkg.visual_odom_converter:main',
+            'frontier_explorer = drone_slam_pkg.frontier_explorer:main',
             
         ],
     },
