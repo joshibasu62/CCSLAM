@@ -2,7 +2,7 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy, DurabilityPolicy
-from px4_msgs.msg import SensorCombined  # <--- CHANGED THIS
+from px4_msgs.msg import SensorCombined  
 from sensor_msgs.msg import Imu
 import numpy as np
 

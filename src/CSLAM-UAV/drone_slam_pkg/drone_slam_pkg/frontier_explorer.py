@@ -62,7 +62,7 @@ class FrontierExplorer(Node):
 
         self.declare_parameter('robot_base_frame',        'base_link')
         self.declare_parameter('map_frame',               'map')
-        self.declare_parameter('costmap_topic',           'global_costmap/costmap')
+        self.declare_parameter('costmap_topic',           'map')
         self.declare_parameter('costmap_updates_topic',   'global_costmap/costmap_updates')
         self.declare_parameter('visualize',               True)
         self.declare_parameter('planner_frequency',       0.33)   # Hz
@@ -114,9 +114,9 @@ class FrontierExplorer(Node):
         self.create_subscription(
             OccupancyGrid, self._costmap_topic,
             self._costmap_cb, 10)
-        self.create_subscription(
-            OccupancyGridUpdate, self._costmap_updates_topic,
-            self._costmap_update_cb, 10)
+        # self.create_subscription(
+        #     OccupancyGridUpdate, self._costmap_updates_topic,
+        #     self._costmap_update_cb, 10)
 
         # Action client
         self._nav_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
@@ -141,15 +141,26 @@ class FrontierExplorer(Node):
         self.get_logger().info(
             f'Costmap received: {msg.info.width}x{msg.info.height} cells '
             f'@ {msg.info.resolution:.3f} m/cell', once=True)
+        
+        #for debugging: count cell types
 
-    def _costmap_update_cb(self, msg: OccupancyGridUpdate):
-        """Apply an incremental patch from the costmap update topic."""
-        if self._costmap is None or self._map_data is None:
-            return
-        r0, c0 = msg.y, msg.x
-        h,  w  = msg.height, msg.width
-        patch = np.array(msg.data, dtype=np.int8).reshape(h, w)
-        self._map_data[r0:r0 + h, c0:c0 + w] = patch
+
+        # unknown = np.sum(self._map_data == -1)
+        # free = np.sum(self._map_data == 0)
+        # occ = np.sum(self._map_data >= 65)
+        # self.get_logger().info(
+        #     f"unique values: {np.unique(self._map_data)} and unknowns are {unknown} cells and free are {free} cells and occupied are {occ} cells",
+        #     throttle_duration_sec=5.0
+        # )
+
+    # def _costmap_update_cb(self, msg: OccupancyGridUpdate):
+    #     """Apply an incremental patch from the costmap update topic."""
+    #     if self._costmap is None or self._map_data is None:
+    #         return
+    #     r0, c0 = msg.y, msg.x
+    #     h,  w  = msg.height, msg.width
+    #     patch = np.array(msg.data, dtype=np.int8).reshape(h, w)
+    #     self._map_data[r0:r0 + h, c0:c0 + w] = patch
 
     # Robot pose
 
@@ -183,7 +194,7 @@ class FrontierExplorer(Node):
         ox   = info.origin.position.x
         oy   = info.origin.position.y
 
-        free_mask    = (data == self._FREE)
+        free_mask = (data >= 0) & (data < self._OCCUPIED) # for general occupancy grids, treat [0] as free here i am also taking account for inflation layer
         unknown_mask = (data == self._UNKNOWN)
 
         # 4 connected dilation of unknown into free space
@@ -274,9 +285,9 @@ class FrontierExplorer(Node):
     def _result_cb(self, future):
         status = future.result().status
         if status == GoalStatus.STATUS_SUCCEEDED:
-            self.get_logger().info('✓ Frontier reached.')
+            self.get_logger().info('Frontier reached.')
         elif status == GoalStatus.STATUS_ABORTED:
-            self.get_logger().warn('✗ Goal aborted — blacklisting frontier.')
+            self.get_logger().warn('Goal aborted blacklisting frontier.')
             if self._current_goal:
                 self._blacklist.append(self._current_goal)
         elif status == GoalStatus.STATUS_CANCELED:
@@ -308,7 +319,7 @@ class FrontierExplorer(Node):
             elapsed = (self.get_clock().now() - self._last_progress).nanoseconds / 1e9
             if elapsed > self._progress_timeout:
                 self.get_logger().warn(
-                    f'Progress timeout after {elapsed:.1f}s — blacklisting & replanning.')
+                    f'Progress timeout after {elapsed:.1f}s blacklisting & replanning.')
                 self._blacklist.append(self._current_goal)
                 self._cancel_goal()
             else:
@@ -319,7 +330,7 @@ class FrontierExplorer(Node):
 
         if not frontiers:
             self.get_logger().info(
-                'No frontiers found — exploration complete (or map not ready).',
+                'No frontiers found, exploration complete (or map not ready).',
                 throttle_duration_sec=10.0)
             return
 
@@ -327,7 +338,7 @@ class FrontierExplorer(Node):
         valid = [f for f in frontiers if not self._blacklisted(f)]
         if not valid:
             self.get_logger().warn(
-                'All frontiers are blacklisted — clearing blacklist and retrying.')
+                'All frontiers are blacklisted, clearing blacklist and retrying.')
             self._blacklist.clear()
             return
 
@@ -339,8 +350,18 @@ class FrontierExplorer(Node):
         if self._visualize:
             self._publish_markers(valid, best)
 
-        # Navigate
-        self._send_goal(best.centroid[0], best.centroid[1])
+        # Navigate :-as frontier centroid may be inside occupied cell or on unknown boundary such that Nav2 can't find a valid path, we apply a small offset towards the robot)
+        dx = best.centroid[0] - robot[0]
+        dy = best.centroid[1] - robot[1]
+
+        dist = math.hypot(dx, dy)
+
+        offset = 0.7   # meters
+
+        goal_x = best.centroid[0] - offset * dx / dist
+        goal_y = best.centroid[1] - offset * dy / dist
+        self._send_goal(goal_x, goal_y)
+        # self._send_goal(best.centroid[0], best.centroid[1])
 
     # Visualization
 

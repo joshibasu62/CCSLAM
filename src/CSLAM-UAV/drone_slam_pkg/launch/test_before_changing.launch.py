@@ -185,8 +185,8 @@ def generate_launch_description():
                 'use_sim_time': True,
                 'approx_sync': True,
                 'approx_sync_max_interval': 0.04,
-                'queue_size': 200,
-                'sync_queue_size': 100,
+                'queue_size': 30,
+                'sync_queue_size': 20,
             }],
             remappings=[
                 ('rgb/image', '/world/default/model/x500_depth_0/link/camera_link/sensor/IMX214/image'),
@@ -203,7 +203,7 @@ def generate_launch_description():
             output='screen',
             parameters=[vslam_params, {'odom_frame_id': 'odom'}],
             remappings=vslam_remappings,  
-            arguments=["--ros-args", "--log-level", 'info'],
+            arguments=["--ros-args", "--log-level", 'warn'],
         ),
 
         Node(
